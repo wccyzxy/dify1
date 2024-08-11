@@ -280,7 +280,7 @@ export const NODE_WIDTH = 240
 export const X_OFFSET = 60
 export const NODE_WIDTH_X_OFFSET = NODE_WIDTH + X_OFFSET
 export const Y_OFFSET = 39
-export const MAX_TREE_DEEPTH = 50
+export const MAX_TREE_DEPTH = 50
 export const START_INITIAL_POSITION = { x: 80, y: 282 }
 export const AUTO_LAYOUT_OFFSET = {
   x: -42,
@@ -360,7 +360,7 @@ export const HTTP_REQUEST_OUTPUT_STRUCT: Var[] = [
   },
   {
     variable: 'headers',
-    type: VarType.string,
+    type: VarType.object,
   },
   {
     variable: 'files',
@@ -377,6 +377,10 @@ export const TOOL_OUTPUT_STRUCT: Var[] = [
     variable: 'files',
     type: VarType.arrayFile,
   },
+  {
+    variable: 'json',
+    type: VarType.arrayObject,
+  },
 ]
 
 export const PARAMETER_EXTRACTOR_COMMON_STRUCT: Var[] = [
@@ -391,3 +395,5 @@ export const PARAMETER_EXTRACTOR_COMMON_STRUCT: Var[] = [
 ]
 
 export const WORKFLOW_DATA_UPDATE = 'WORKFLOW_DATA_UPDATE'
+export const CUSTOM_NODE = 'custom'
+export const DSL_EXPORT_CHECK = 'DSL_EXPORT_CHECK'

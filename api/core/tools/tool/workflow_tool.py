@@ -31,9 +31,10 @@ class WorkflowTool(Tool):
             :return: the tool provider type
         """
         return ToolProviderType.WORKFLOW
-    
-    def _invoke(self, user_id: str, tool_parameters: dict[str, Any]) \
-        -> Union[ToolInvokeMessage, list[ToolInvokeMessage]]:
+
+    def _invoke(
+        self, user_id: str, tool_parameters: dict[str, Any]
+    ) -> Union[ToolInvokeMessage, list[ToolInvokeMessage]]:
         """
             invoke the tool
         """
@@ -71,6 +72,7 @@ class WorkflowTool(Tool):
             result.append(self.create_file_var_message(file))
         
         result.append(self.create_text_message(json.dumps(outputs, ensure_ascii=False)))
+        result.append(self.create_json_message(outputs))
 
         return result
 

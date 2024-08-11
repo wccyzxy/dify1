@@ -13,14 +13,40 @@ class RerankingModelConfig(BaseModel):
     model: str
 
 
+class VectorSetting(BaseModel):
+    """
+    Vector Setting.
+    """
+    vector_weight: float
+    embedding_provider_name: str
+    embedding_model_name: str
+
+
+class KeywordSetting(BaseModel):
+    """
+    Keyword Setting.
+    """
+    keyword_weight: float
+
+
+class WeightedScoreConfig(BaseModel):
+    """
+    Weighted score Config.
+    """
+    vector_setting: VectorSetting
+    keyword_setting: KeywordSetting
+
+
 class MultipleRetrievalConfig(BaseModel):
     """
     Multiple Retrieval Config.
     """
     top_k: int
-    score_threshold: Optional[float]
-    reranking_model: RerankingModelConfig
-
+    score_threshold: Optional[float] = None
+    reranking_mode: str = 'reranking_model'
+    reranking_enable: bool = True
+    reranking_model: Optional[RerankingModelConfig] = None
+    weights: Optional[WeightedScoreConfig] = None
 
 class ModelConfig(BaseModel):
     """
@@ -47,5 +73,5 @@ class KnowledgeRetrievalNodeData(BaseNodeData):
     query_variable_selector: list[str]
     dataset_ids: list[str]
     retrieval_mode: Literal['single', 'multiple']
-    multiple_retrieval_config: Optional[MultipleRetrievalConfig]
-    single_retrieval_config: Optional[SingleRetrievalConfig]
+    multiple_retrieval_config: Optional[MultipleRetrievalConfig] = None
+    single_retrieval_config: Optional[SingleRetrievalConfig] = None

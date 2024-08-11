@@ -4,7 +4,7 @@
   <a href="https://cloud.dify.ai">Dify Cloud</a> ·
   <a href="https://docs.dify.ai/getting-started/install-self-hosted">Auto-hébergement</a> ·
   <a href="https://docs.dify.ai">Documentation</a> ·
-  <a href="https://cal.com/guchenhe/dify-demo">Planifier une démo</a>
+  <a href="https://udify.app/chat/22L1zSxg6yW1cWQg">Demande d’entreprise (en anglais seulement)</a>
 </p>
 
 <p align="center">
@@ -36,6 +36,7 @@
   <a href="./README_KL.md"><img alt="Commits le mois dernier" src="https://img.shields.io/badge/Français-d9d9d9"></a>
   <a href="./README_FR.md"><img alt="Commits le mois dernier" src="https://img.shields.io/badge/Klingon-d9d9d9"></a>
   <a href="./README_KR.md"><img alt="Commits le mois dernier" src="https://img.shields.io/badge/한국어-d9d9d9"></a>
+  <a href="./README_TR.md"><img alt="Türkçe README" src="https://img.shields.io/badge/Türkçe-d9d9d9"></a>
 </p>
 
 #
@@ -69,7 +70,7 @@ Dify est une plateforme de développement d'applications LLM open source. Son in
 **5. Capac
 
 ités d'agent**: 
-  Vous pouvez définir des agents basés sur l'appel de fonction LLM ou ReAct, et ajouter des outils pré-construits ou personnalisés pour l'agent. Dify fournit plus de 50 outils intégrés pour les agents d'IA, tels que la recherche Google, DELL·E, Stable Diffusion et WolframAlpha.
+  Vous pouvez définir des agents basés sur l'appel de fonction LLM ou ReAct, et ajouter des outils pré-construits ou personnalisés pour l'agent. Dify fournit plus de 50 outils intégrés pour les agents d'IA, tels que la recherche Google, DALL·E, Stable Diffusion et WolframAlpha.
 
 **6. LLMOps**: 
   Surveillez et analysez les journaux d'application et les performances au fil du temps. Vous pouvez continuellement améliorer les prompts, les ensembles de données et les modèles en fonction des données de production et des annotations.
@@ -179,6 +180,7 @@ La manière la plus simple de démarrer le serveur Dify est d'exécuter notre fi
 
 ```bash
 cd docker
+cp .env.example .env
 docker compose up -d
 ```
 
@@ -188,14 +190,19 @@ Après l'exécution, vous pouvez accéder au tableau de bord Dify dans votre nav
 
 ## Prochaines étapes
 
-Si vous devez personnaliser la configuration, veuillez
+Si vous devez personnaliser la configuration, veuillez vous référer aux commentaires dans notre fichier [.env.example](docker/.env.example) et mettre à jour les valeurs correspondantes dans votre fichier `.env`. De plus, vous devrez peut-être apporter des modifications au fichier `docker-compose.yaml` lui-même, comme changer les versions d'image, les mappages de ports ou les montages de volumes, en fonction de votre environnement de déploiement et de vos exigences spécifiques. Après avoir effectué des modifications, veuillez réexécuter `docker-compose up -d`. Vous pouvez trouver la liste complète des variables d'environnement disponibles [ici](https://docs.dify.ai/getting-started/install-self-hosted/environments).
 
- vous référer aux commentaires dans notre fichier [docker-compose.yml](docker/docker-compose.yaml) et définir manuellement la configuration de l'environnement. Après avoir apporté les modifications, veuillez exécuter à nouveau `docker-compose up -d`. Vous pouvez voir la liste complète des variables d'environnement [ici](https://docs.dify.ai/getting-started/install-self-hosted/environments).
-
-Si vous souhaitez configurer une installation hautement disponible, il existe des [Helm Charts](https://helm.sh/) contribués par la communauté qui permettent de déployer Dify sur Kubernetes.
+Si vous souhaitez configurer une configuration haute disponibilité, la communauté fournit des [Helm Charts](https://helm.sh/) et des fichiers YAML, à travers lesquels vous pouvez déployer Dify sur Kubernetes.
 
 - [Helm Chart par @LeoQuote](https://github.com/douban/charts/tree/master/charts/dify)
 - [Helm Chart par @BorisPolonsky](https://github.com/BorisPolonsky/dify-helm)
+- [Fichier YAML par @Winson-030](https://github.com/Winson-030/dify-kubernetes)
+
+#### Utilisation de Terraform pour le déploiement
+
+##### Azure Global
+Utilisez [terraform](https://www.terraform.io/) pour déployer Dify sur Azure en un clic.
+- [Azure Terraform par @nikawang](https://github.com/nikawang/dify-azure-terraform)
 
 
 ## Contribuer
@@ -216,7 +223,6 @@ Dans le même temps, veuillez envisager de soutenir Dify en le partageant sur le
 
 * [Discussion GitHub](https://github.com/langgenius/dify/discussions). Meilleur pour: partager des commentaires et poser des questions.
 * [Problèmes GitHub](https://github.com/langgenius/dify/issues). Meilleur pour: les bogues que vous rencontrez en utilisant Dify.AI et les propositions de fonctionnalités. Consultez notre [Guide de contribution](https://github.com/langgenius/dify/blob/main/CONTRIBUTING.md).
-* [E-mail](mailto:support@dify.ai?subject=[GitHub]Questions%20About%20Dify). Meilleur pour: les questions que vous avez sur l'utilisation de Dify.AI.
 * [Discord](https://discord.gg/FngNHpbcY7). Meilleur pour: partager vos applications et passer du temps avec la communauté.
 * [Twitter](https://twitter.com/dify_ai). Meilleur pour: partager vos applications et passer du temps avec la communauté.
 

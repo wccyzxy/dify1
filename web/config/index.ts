@@ -102,7 +102,7 @@ export const DEFAULT_PARAGRAPH_VALUE_MAX_LEN = 1000
 
 export const zhRegex = /^[\u4E00-\u9FA5]$/m
 export const emojiRegex = /^[\uD800-\uDBFF][\uDC00-\uDFFF]$/m
-export const emailRegex = /^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$/m
+export const emailRegex = /^[\w.!#$%&'*+\-/=?^{|}~]+@([\w-]+\.)+[\w-]{2,}$/m
 const MAX_ZN_VAR_NAME_LENGHT = 8
 const MAX_EN_VAR_VALUE_LENGHT = 30
 export const getMaxVarNameLength = (value: string) => {
@@ -138,8 +138,8 @@ export const appDefaultIconBackground = '#D5F5F6'
 export const NEED_REFRESH_APP_LIST_KEY = 'needRefreshAppList'
 
 export const DATASET_DEFAULT = {
-  top_k: 2,
-  score_threshold: 0.5,
+  top_k: 4,
+  score_threshold: 0.8,
 }
 
 export const APP_PAGE_LIMIT = 10
@@ -245,3 +245,5 @@ Thought: {{agent_scratchpad}}
 }
 
 export const VAR_REGEX = /\{\{(#[a-zA-Z0-9_-]{1,50}(\.[a-zA-Z_][a-zA-Z0-9_]{0,29}){1,10}#)\}\}/gi
+
+export const TEXT_GENERATION_TIMEOUT_MS = 60000

@@ -12,6 +12,7 @@ const translation = {
     cancel: 'Hủy bỏ',
     clear: 'Xóa',
     save: 'Lưu',
+    saveAndEnable: 'Lưu & Kích hoạt',
     edit: 'Chỉnh sửa',
     add: 'Thêm',
     added: 'Đã thêm',
@@ -77,7 +78,7 @@ const translation = {
     params: {
       temperature: 'Nhiệt độ',
       temperatureTip:
-        'Kiểm soát sự ngẫu nhiên: Giảm nhiệt độ dẫn đến ít kết quả hoàn thành ngẫu nhiên hơn. Khi nhiệt độ tiến gần về không, mô hình sẽ trở nên xác định và lặp lại.',
+        'Kiểm soát độ ngẫu nhiên: Giảm nhiệt độ dẫn đến ít kết quả ngẫu nhiên hơn. Khi nhiệt độ gần bằng 0, mô hình sẽ trở nên xác định và lặp lại.',
       top_p: 'Top P',
       top_pTip:
         'Kiểm soát đa dạng thông qua lấy mẫu nhân nhóm: 0.5 có nghĩa là nửa số tùy chọn có khả năng cao được xem xét.',
@@ -111,13 +112,14 @@ const translation = {
     plugins: 'Plugins',
     pluginsTips: 'Tích hợp các plugin bên thứ ba hoặc tạo ra các AI-Plugin tương thích với ChatGPT.',
     datasets: 'Kiến thức',
-    datasetsTips: 'SẮP RA MẮT: Nhập dữ liệu văn bản của bạn hoặc viết dữ liệu theo thời gian thực thông qua Webhook để cải thiện ngữ cảnh LLM.',
+    datasetsTips: 'SẮP RA MẮT: Nhập dữ liệu văn bản của bạn hoặc cập nhật dữ liệu theo thời gian thực thông qua Webhook để cải thiện ngữ cảnh LLM.',
     newApp: 'Ứng dụng mới',
     newDataset: 'Tạo Kiến thức',
     tools: 'Công cụ',
   },
   userProfile: {
     settings: 'Cài đặt',
+    emailSupport: 'Hỗ trợ qua Email',
     workspace: 'Không gian làm việc',
     createWorkspace: 'Tạo Không gian làm việc',
     helpCenter: 'Trung tâm trợ giúp',
@@ -127,8 +129,8 @@ const translation = {
     logout: 'Đăng xuất',
   },
   settings: {
-    accountGroup: 'ACCOUNT',
-    workplaceGroup: 'WORKSPACE',
+    accountGroup: 'TÀI KHOẢN',
+    workplaceGroup: 'KHÔNG GIAN LÀM VIỆC',
     account: 'Tài khoản của tôi',
     members: 'Thành viên',
     billing: 'Thanh toán',
@@ -155,6 +157,9 @@ const translation = {
     langGeniusAccountTip: 'Tài khoản Dify của bạn và dữ liệu người dùng liên quan.',
     editName: 'Chỉnh sửa Tên',
     showAppLength: 'Hiển thị {{length}} ứng dụng',
+    delete: 'Xóa tài khoản',
+    deleteTip: 'Xóa tài khoản của bạn sẽ xóa vĩnh viễn tất cả dữ liệu của bạn và không thể khôi phục được.',
+    deleteConfirmTip: 'Để xác nhận, vui lòng gửi thông tin sau từ email đã đăng ký của bạn tới ',
   },
   members: {
     team: 'Nhóm',
@@ -168,6 +173,8 @@ const translation = {
     adminTip: 'Có thể xây dựng ứng dụng và quản lý cài đặt nhóm',
     normal: 'Bình thường',
     normalTip: 'Chỉ có thể sử dụng ứng dụng, không thể xây dựng ứng dụng',
+    editor: 'Biên tập viên',
+    editorTip: 'Có thể xây dựng ứng dụng, không thể quản lý cài đặt nhóm',
     inviteTeamMember: 'Mời thành viên nhóm',
     inviteTeamMemberTip: 'Sau khi đăng nhập, họ có thể truy cập trực tiếp vào dữ liệu nhóm của bạn.',
     email: 'Email',
@@ -184,6 +191,7 @@ const translation = {
     removeFromTeamTip: 'Sẽ xóa quyền truy cập nhóm',
     setAdmin: 'Đặt làm quản trị viên',
     setMember: 'Đặt thành viên bình thường',
+    setEditor: 'Đặt làm biên tập viên',
     disinvite: 'Hủy lời mời',
     deleteMember: 'Xóa thành viên',
     you: '(Bạn)',
@@ -221,7 +229,7 @@ const translation = {
     },
     openaiHosted: {
       openaiHosted: 'OpenAI đang lưu trữ',
-      onTrial: 'TRIÊN DÙNG THỬ',
+      onTrial: 'DÙNG THỬ',
       exhausted: 'HẾT QUOTA',
       desc: 'Dịch vụ lưu trữ OpenAI được cung cấp bởi Dify cho phép bạn sử dụng các mô hình như GPT-3.5. Trước khi hết lượng truy vấn dùng thử, bạn cần thiết lập các nhà cung cấp mô hình khác.',
       callTimes: 'Số lần gọi',
@@ -231,7 +239,7 @@ const translation = {
     },
     anthropicHosted: {
       anthropicHosted: 'Anthropic Claude',
-      onTrial: 'TRIÊN DÙNG THỬ',
+      onTrial: 'DÙNG THỬ',
       exhausted: 'HẾT QUOTA',
       desc: 'Mô hình mạnh mẽ, vượt trội trong một loạt các nhiệm vụ từ trò chuyện phức tạp và tạo nội dung sáng tạo đến hướng dẫn chi tiết.',
       callTimes: 'Số lần gọi',
@@ -258,7 +266,7 @@ const translation = {
     setupModelFirst: 'Vui lòng thiết lập mô hình của bạn trước',
     systemReasoningModel: {
       key: 'Mô hình lập luận hệ thống',
-      tip: 'Thiết lập mô hình suy luận mặc định sẽ được sử dụng để tạo ứng dụng, cũng như các tính năng như việc tạo tên cuộc trò chuyện và đề xuất câu hỏi tiếp theo cũng sẽ sử dụng mô hình suy luận mặc định.',
+      tip: 'Thiết lập mô hình suy luận mặc định sẽ được sử dụng để tạo ứng dụng. Các tính năng như tạo tên cuộc trò chuyện và đề xuất câu hỏi tiếp theo cũng sẽ sử dụng mô hình suy luận mặc định này.',
     },
     embeddingModel: {
       key: 'Mô hình nhúng',
@@ -400,7 +408,7 @@ const translation = {
     latestAvailable: 'Dify {{version}} là phiên bản mới nhất hiện có.',
   },
   appMenus: {
-    overview: 'Tổng quan',
+    overview: 'Giám sát',
     promptEng: 'Orchestrate',
     apiAccess: 'Truy cập API',
     logAndAnn: 'Nhật ký & Thông báo',

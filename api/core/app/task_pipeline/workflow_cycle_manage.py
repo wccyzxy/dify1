@@ -22,6 +22,8 @@ from core.app.entities.task_entities import (
 from core.app.task_pipeline.workflow_iteration_cycle_manage import WorkflowIterationCycleManage
 from core.file.file_obj import FileVar
 from core.model_runtime.utils.encoders import jsonable_encoder
+from core.ops.entities.trace_entity import TraceTaskName
+from core.ops.ops_trace_manager import TraceQueueManager, TraceTask
 from core.tools.tool_manager import ToolManager
 from core.workflow.entities.node_entities import NodeRunMetadataKey, NodeType
 from core.workflow.nodes.tool.entities import ToolNodeData
@@ -39,6 +41,7 @@ from models.workflow import (
     WorkflowRunStatus,
     WorkflowRunTriggeredFrom,
 )
+from services.workflow_service import WorkflowService
 
 
 class WorkflowCycleManage(WorkflowIterationCycleManage):
@@ -94,23 +97,26 @@ class WorkflowCycleManage(WorkflowIterationCycleManage):
 
         return workflow_run
 
-    def _workflow_run_success(self, workflow_run: WorkflowRun,
-                              start_at: float,
-                              total_tokens: int,
-                              total_steps: int,
-                              outputs: Optional[str] = None) -> WorkflowRun:
+    def _workflow_run_success(
+        self, workflow_run: WorkflowRun,
+        total_tokens: int,
+        total_steps: int,
+        outputs: Optional[str] = None,
+        conversation_id: Optional[str] = None,
+        trace_manager: Optional[TraceQueueManager] = None
+    ) -> WorkflowRun:
         """
         Workflow run success
         :param workflow_run: workflow run
-        :param start_at: start time
         :param total_tokens: total tokens
         :param total_steps: total steps
         :param outputs: outputs
+        :param conversation_id: conversation id
         :return:
         """
         workflow_run.status = WorkflowRunStatus.SUCCEEDED.value
         workflow_run.outputs = outputs
-        workflow_run.elapsed_time = time.perf_counter() - start_at
+        workflow_run.elapsed_time = WorkflowService.get_elapsed_time(workflow_run_id=workflow_run.id)
         workflow_run.total_tokens = total_tokens
         workflow_run.total_steps = total_steps
         workflow_run.finished_at = datetime.now(timezone.utc).replace(tzinfo=None)
@@ -119,18 +125,30 @@ class WorkflowCycleManage(WorkflowIterationCycleManage):
         db.session.refresh(workflow_run)
         db.session.close()
 
+        if trace_manager:
+            trace_manager.add_trace_task(
+                TraceTask(
+                    TraceTaskName.WORKFLOW_TRACE,
+                    workflow_run=workflow_run,
+                    conversation_id=conversation_id,
+                    user_id=trace_manager.user_id,
+                )
+            )
+
         return workflow_run
 
-    def _workflow_run_failed(self, workflow_run: WorkflowRun,
-                             start_at: float,
-                             total_tokens: int,
-                             total_steps: int,
-                             status: WorkflowRunStatus,
-                             error: str) -> WorkflowRun:
+    def _workflow_run_failed(
+        self, workflow_run: WorkflowRun,
+        total_tokens: int,
+        total_steps: int,
+        status: WorkflowRunStatus,
+        error: str,
+        conversation_id: Optional[str] = None,
+        trace_manager: Optional[TraceQueueManager] = None
+    ) -> WorkflowRun:
         """
         Workflow run failed
         :param workflow_run: workflow run
-        :param start_at: start time
         :param total_tokens: total tokens
         :param total_steps: total steps
         :param status: status
@@ -139,7 +157,7 @@ class WorkflowCycleManage(WorkflowIterationCycleManage):
         """
         workflow_run.status = status.value
         workflow_run.error = error
-        workflow_run.elapsed_time = time.perf_counter() - start_at
+        workflow_run.elapsed_time = WorkflowService.get_elapsed_time(workflow_run_id=workflow_run.id)
         workflow_run.total_tokens = total_tokens
         workflow_run.total_steps = total_steps
         workflow_run.finished_at = datetime.now(timezone.utc).replace(tzinfo=None)
@@ -147,6 +165,16 @@ class WorkflowCycleManage(WorkflowIterationCycleManage):
         db.session.commit()
         db.session.refresh(workflow_run)
         db.session.close()
+
+        if trace_manager:
+            trace_manager.add_trace_task(
+                TraceTask(
+                    TraceTaskName.WORKFLOW_TRACE,
+                    workflow_run=workflow_run,
+                    conversation_id=conversation_id,
+                    user_id=trace_manager.user_id,
+                )
+            )
 
         return workflow_run
 
@@ -180,7 +208,8 @@ class WorkflowCycleManage(WorkflowIterationCycleManage):
             title=node_title,
             status=WorkflowNodeExecutionStatus.RUNNING.value,
             created_by_role=workflow_run.created_by_role,
-            created_by=workflow_run.created_by
+            created_by=workflow_run.created_by,
+            created_at=datetime.now(timezone.utc).replace(tzinfo=None)
         )
 
         db.session.add(workflow_node_execution)
@@ -440,9 +469,9 @@ class WorkflowCycleManage(WorkflowIterationCycleManage):
         current_node_execution = self._task_state.ran_node_execution_infos[event.node_id]
         workflow_node_execution = db.session.query(WorkflowNodeExecution).filter(
             WorkflowNodeExecution.id == current_node_execution.workflow_node_execution_id).first()
-        
+
         execution_metadata = event.execution_metadata if isinstance(event, QueueNodeSucceededEvent) else None
-        
+
         if self._iteration_state and self._iteration_state.current_iterations:
             if not execution_metadata:
                 execution_metadata = {}
@@ -470,7 +499,7 @@ class WorkflowCycleManage(WorkflowIterationCycleManage):
             if execution_metadata and execution_metadata.get(NodeRunMetadataKey.TOTAL_TOKENS):
                 self._task_state.total_tokens += (
                     int(execution_metadata.get(NodeRunMetadataKey.TOTAL_TOKENS)))
-                
+
                 if self._iteration_state:
                     for iteration_node_id in self._iteration_state.current_iterations:
                         data = self._iteration_state.current_iterations[iteration_node_id]
@@ -496,21 +525,27 @@ class WorkflowCycleManage(WorkflowIterationCycleManage):
 
         return workflow_node_execution
 
-    def _handle_workflow_finished(self, event: QueueStopEvent | QueueWorkflowSucceededEvent | QueueWorkflowFailedEvent) \
-            -> Optional[WorkflowRun]:
+    def _handle_workflow_finished(
+        self, event: QueueStopEvent | QueueWorkflowSucceededEvent | QueueWorkflowFailedEvent,
+        conversation_id: Optional[str] = None,
+        trace_manager: Optional[TraceQueueManager] = None
+    ) -> Optional[WorkflowRun]:
         workflow_run = db.session.query(WorkflowRun).filter(
             WorkflowRun.id == self._task_state.workflow_run_id).first()
         if not workflow_run:
             return None
 
+        if conversation_id is None:
+            conversation_id = self._application_generate_entity.inputs.get('sys.conversation_id')
         if isinstance(event, QueueStopEvent):
             workflow_run = self._workflow_run_failed(
                 workflow_run=workflow_run,
-                start_at=self._task_state.start_at,
                 total_tokens=self._task_state.total_tokens,
                 total_steps=self._task_state.total_steps,
                 status=WorkflowRunStatus.STOPPED,
-                error='Workflow stopped.'
+                error='Workflow stopped.',
+                conversation_id=conversation_id,
+                trace_manager=trace_manager
             )
 
             latest_node_execution_info = self._task_state.latest_node_execution_info
@@ -527,11 +562,12 @@ class WorkflowCycleManage(WorkflowIterationCycleManage):
         elif isinstance(event, QueueWorkflowFailedEvent):
             workflow_run = self._workflow_run_failed(
                 workflow_run=workflow_run,
-                start_at=self._task_state.start_at,
                 total_tokens=self._task_state.total_tokens,
                 total_steps=self._task_state.total_steps,
                 status=WorkflowRunStatus.FAILED,
-                error=event.error
+                error=event.error,
+                conversation_id=conversation_id,
+                trace_manager=trace_manager
             )
         else:
             if self._task_state.latest_node_execution_info:
@@ -543,10 +579,11 @@ class WorkflowCycleManage(WorkflowIterationCycleManage):
 
             workflow_run = self._workflow_run_success(
                 workflow_run=workflow_run,
-                start_at=self._task_state.start_at,
                 total_tokens=self._task_state.total_tokens,
                 total_steps=self._task_state.total_steps,
-                outputs=outputs
+                outputs=outputs,
+                conversation_id=conversation_id,
+                trace_manager=trace_manager
             )
 
         self._task_state.workflow_run_id = workflow_run.id

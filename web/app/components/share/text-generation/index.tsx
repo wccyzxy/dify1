@@ -2,17 +2,19 @@
 import type { FC } from 'react'
 import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import cn from 'classnames'
+import {
+  RiErrorWarningFill,
+} from '@remixicon/react'
 import { useBoolean, useClickAway } from 'ahooks'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import TabHeader from '../../base/tab-header'
 import Button from '../../base/button'
 import { checkOrSetAccessToken } from '../utils'
-import { AlertCircle } from '../../base/icons/src/vender/solid/alertsAndFeedback'
 import s from './style.module.css'
 import RunBatch from './run-batch'
 import ResDownload from './run-batch/res-download'
+import cn from '@/utils/classnames'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import RunOnce from '@/app/components/share/text-generation/run-once'
 import { fetchSavedMessage as doFetchSavedMessage, fetchAppInfo, fetchAppParams, removeMessage, saveMessage } from '@/service/share'
@@ -34,6 +36,7 @@ import { DEFAULT_VALUE_MAX_LEN, appDefaultIconBackground } from '@/config'
 import Toast from '@/app/components/base/toast'
 import type { VisionFile, VisionSettings } from '@/types/app'
 import { Resolution, TransferMethod } from '@/types/app'
+import { useAppFavicon } from '@/hooks/use-app-favicon'
 
 const GROUP_SIZE = 5 // to avoid RPM(Request per minute) limit. The group task finished then the next group.
 enum TaskStatus {
@@ -361,6 +364,8 @@ const TextGeneration: FC<IMainProps> = ({
             title: installedAppInfo?.app.name,
             prompt_public: false,
             copyright: '',
+            icon: installedAppInfo?.app.icon,
+            icon_background: installedAppInfo?.app.icon_background,
           },
           plan: 'basic',
         }
@@ -406,6 +411,8 @@ const TextGeneration: FC<IMainProps> = ({
     }
   }, [siteInfo?.title, canReplaceLogo])
 
+  useAppFavicon(!isInstalledApp, siteInfo?.icon, siteInfo?.icon_background)
+
   const [isShowResSidebar, { setTrue: doShowResSidebar, setFalse: hideResSidebar }] = useBoolean(false)
   const showResSidebar = () => {
     // fix: useClickAway hideResSidebar will close sidebar
@@ -440,6 +447,7 @@ const TextGeneration: FC<IMainProps> = ({
     visionConfig={visionConfig}
     completionFiles={completionFiles}
     isShowTextToSpeech={!!textToSpeechConfig?.enabled}
+    siteInfo={siteInfo}
   />)
 
   const renderBatchRes = () => {
@@ -475,11 +483,11 @@ const TextGeneration: FC<IMainProps> = ({
           <div className='flex items-center space-x-2'>
             {allFailedTaskList.length > 0 && (
               <div className='flex items-center'>
-                <AlertCircle className='w-4 h-4 text-[#D92D20]' />
+                <RiErrorWarningFill className='w-4 h-4 text-[#D92D20]' />
                 <div className='ml-1 text-[#D92D20]'>{t('share.generation.batchFailed.info', { num: allFailedTaskList.length })}</div>
                 <Button
-                  type='primary'
-                  className='ml-2 !h-8 !px-3'
+                  variant='primary'
+                  className='ml-2'
                   onClick={handleRetryAllFailedTask}
                 >{t('share.generation.batchFailed.retry')}</Button>
                 <div className='mx-3 w-[1px] h-3.5 bg-gray-200'></div>
@@ -542,7 +550,7 @@ const TextGeneration: FC<IMainProps> = ({
               </div>
               {!isPC && (
                 <Button
-                  className='shrink-0 !h-8 !px-3 ml-2'
+                  className='shrink-0 ml-2'
                   onClick={showResSidebar}
                 >
                   <div className='flex items-center space-x-2 text-primary-600 text-[13px] font-medium'>

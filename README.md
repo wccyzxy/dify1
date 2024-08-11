@@ -4,7 +4,7 @@
   <a href="https://cloud.dify.ai">Dify Cloud</a> ·
   <a href="https://docs.dify.ai/getting-started/install-self-hosted">Self-hosting</a> ·
   <a href="https://docs.dify.ai">Documentation</a> ·
-  <a href="https://cal.com/guchenhe/60-min-meeting">Enterprise inquiry</a>
+  <a href="https://udify.app/chat/22L1zSxg6yW1cWQg">Enterprise inquiry</a>
 </p>
 
 <p align="center">
@@ -36,6 +36,8 @@
   <a href="./README_FR.md"><img alt="README en Français" src="https://img.shields.io/badge/Français-d9d9d9"></a>
   <a href="./README_KL.md"><img alt="README tlhIngan Hol" src="https://img.shields.io/badge/Klingon-d9d9d9"></a>
   <a href="./README_KR.md"><img alt="README in Korean" src="https://img.shields.io/badge/한국어-d9d9d9"></a>
+  <a href="./README_AR.md"><img alt="README بالعربية" src="https://img.shields.io/badge/العربية-d9d9d9"></a>
+  <a href="./README_TR.md"><img alt="Türkçe README" src="https://img.shields.io/badge/Türkçe-d9d9d9"></a>
 </p>
 
 
@@ -63,7 +65,7 @@ Dify is an open-source LLM app development platform. Its intuitive interface com
   Extensive RAG capabilities that cover everything from document ingestion to retrieval, with out-of-box support for text extraction from PDFs, PPTs, and other common document formats.
 
 **5. Agent capabilities**: 
-  You can define agents based on LLM Function Calling or ReAct, and add pre-built or custom tools for the agent. Dify provides 50+ built-in tools for AI agents, such as Google Search, DELL·E, Stable Diffusion and WolframAlpha.
+  You can define agents based on LLM Function Calling or ReAct, and add pre-built or custom tools for the agent. Dify provides 50+ built-in tools for AI agents, such as Google Search, DALL·E, Stable Diffusion and WolframAlpha.
 
 **6. LLMOps**: 
   Monitor and analyze application logs and performance over time. You could continuously improve prompts, datasets, and models based on production data and annotations.
@@ -173,6 +175,7 @@ The easiest way to start the Dify server is to run our [docker-compose.yml](dock
 
 ```bash
 cd docker
+cp .env.example .env
 docker compose up -d
 ```
 
@@ -182,13 +185,19 @@ After running, you can access the Dify dashboard in your browser at [http://loca
 
 ## Next steps
 
-If you need to customize the configuration, please refer to the comments in our [docker-compose.yml](docker/docker-compose.yaml) file and manually set the environment configuration. After making the changes, please run `docker-compose up -d` again. You can see the full list of environment variables [here](https://docs.dify.ai/getting-started/install-self-hosted/environments).
+If you need to customize the configuration, please refer to the comments in our [.env.example](docker/.env.example) file and update the corresponding values in your `.env` file. Additionally, you might need to make adjustments to the `docker-compose.yaml` file itself, such as changing image versions, port mappings, or volume mounts, based on your specific deployment environment and requirements. After making any changes, please re-run `docker-compose up -d`. You can find the full list of available environment variables [here](https://docs.dify.ai/getting-started/install-self-hosted/environments).
 
-If you'd like to configure a highly-available setup, there are community-contributed [Helm Charts](https://helm.sh/) which allow Dify to be deployed on Kubernetes.
+If you'd like to configure a highly-available setup, there are community-contributed [Helm Charts](https://helm.sh/) and YAML files which allow Dify to be deployed on Kubernetes.
 
 - [Helm Chart by @LeoQuote](https://github.com/douban/charts/tree/master/charts/dify)
 - [Helm Chart by @BorisPolonsky](https://github.com/BorisPolonsky/dify-helm)
+- [YAML file by @Winson-030](https://github.com/Winson-030/dify-kubernetes)
 
+#### Using Terraform for Deployment
+
+##### Azure Global
+Deploy Dify to Azure with a single click using [terraform](https://www.terraform.io/).
+- [Azure Terraform by @nikawang](https://github.com/nikawang/dify-azure-terraform)
 
 ## Contributing
 
@@ -208,7 +217,6 @@ At the same time, please consider supporting Dify by sharing it on social media 
 
 * [Github Discussion](https://github.com/langgenius/dify/discussions). Best for: sharing feedback and asking questions.
 * [GitHub Issues](https://github.com/langgenius/dify/issues). Best for: bugs you encounter using Dify.AI, and feature proposals. See our [Contribution Guide](https://github.com/langgenius/dify/blob/main/CONTRIBUTING.md).
-* [Email](mailto:support@dify.ai?subject=[GitHub]Questions%20About%20Dify). Best for: questions you have about using Dify.AI.
 * [Discord](https://discord.gg/FngNHpbcY7). Best for: sharing your applications and hanging out with the community.
 * [Twitter](https://twitter.com/dify_ai). Best for: sharing your applications and hanging out with the community.
 

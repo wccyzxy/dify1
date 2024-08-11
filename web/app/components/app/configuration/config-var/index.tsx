@@ -6,6 +6,10 @@ import { useBoolean } from 'ahooks'
 import type { Timeout } from 'ahooks/lib/useRequest/src/types'
 import { useContext } from 'use-context-selector'
 import produce from 'immer'
+import {
+  RiDeleteBinLine,
+  RiQuestionLine,
+} from '@remixicon/react'
 import Panel from '../base/feature-panel'
 import EditModal from './config-modal'
 import IconTypeIcon from './input-type-icon'
@@ -19,8 +23,8 @@ import { DEFAULT_VALUE_MAX_LEN, getMaxVarNameLength } from '@/config'
 import { checkKeys, getNewVar } from '@/utils/var'
 import Switch from '@/app/components/base/switch'
 import Toast from '@/app/components/base/toast'
-import { HelpCircle, Settings01, Trash03 } from '@/app/components/base/icons/src/vender/line/general'
-import ConfirmModal from '@/app/components/base/confirm/common'
+import { Settings01 } from '@/app/components/base/icons/src/vender/line/general'
+import Confirm from '@/app/components/base/confirm'
 import ConfigContext from '@/context/debug-configuration'
 import { AppType } from '@/types/app'
 import type { ExternalDataTool } from '@/models/common'
@@ -92,7 +96,7 @@ const ConfigVar: FC<IConfigVarProps> = ({ promptVariables, readonly, onPromptVar
         ...rest,
         type: type === InputVarType.textInput ? 'string' : type,
         key: variable,
-        name: label,
+        name: label as string,
       }
 
       if (payload.type === InputVarType.textInput)
@@ -281,7 +285,7 @@ const ConfigVar: FC<IConfigVarProps> = ({ promptVariables, readonly, onPromptVar
             <Tooltip htmlContent={<div className='w-[180px]'>
               {t('appDebug.variableTip')}
             </div>} selector='config-var-tooltip'>
-              <HelpCircle className='w-[14px] h-[14px] text-gray-400' />
+              <RiQuestionLine className='w-[14px] h-[14px] text-gray-400' />
             </Tooltip>
           )}
         </div>
@@ -358,7 +362,7 @@ const ConfigVar: FC<IConfigVarProps> = ({ promptVariables, readonly, onPromptVar
                             <Settings01 className='w-4 h-4 text-gray-500' />
                           </div>
                           <div className=' p-1 rounded-md hover:bg-black/5 w-6 h-6 cursor-pointer' onClick={() => handleRemoveVar(index)} >
-                            <Trash03 className='w-4 h-4 text-gray-500' />
+                            <RiDeleteBinLine className='w-4 h-4 text-gray-500' />
                           </div>
                         </div>
                       </td>
@@ -385,11 +389,10 @@ const ConfigVar: FC<IConfigVarProps> = ({ promptVariables, readonly, onPromptVar
       )}
 
       {isShowDeleteContextVarModal && (
-        <ConfirmModal
+        <Confirm
           isShow={isShowDeleteContextVarModal}
           title={t('appDebug.feature.dataSet.queryVariable.deleteContextVarTitle', { varName: promptVariables[removeIndex as number]?.name })}
-          desc={t('appDebug.feature.dataSet.queryVariable.deleteContextVarTip') as string}
-          confirmBtnClassName='bg-[#B42318] hover:bg-[#B42318]'
+          content={t('appDebug.feature.dataSet.queryVariable.deleteContextVarTip')}
           onConfirm={() => {
             didRemoveVar(removeIndex as number)
             hideDeleteContextVarModal()
