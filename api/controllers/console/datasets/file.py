@@ -1,3 +1,4 @@
+import os
 from flask import request
 from flask_login import current_user
 from flask_restful import Resource, marshal_with
@@ -54,13 +55,39 @@ class FileApi(Resource):
             raise TooManyFilesError()
         try:
             upload_file = FileService.upload_file(file, current_user)
+            path = f'data/{upload_file.id}.{upload_file.extension}'
+            file_path = self.ensure_directory(path)
+            file.save(file_path)
         except services.errors.file.FileTooLargeError as file_too_large_error:
             raise FileTooLargeError(file_too_large_error.description)
         except services.errors.file.UnsupportedFileTypeError:
             raise UnsupportedFileTypeError()
-
         return upload_file, 201
 
+    import os
+
+    def ensure_directory(self, path):
+        # 获取当前工作目录
+        current_directory = os.getcwd()
+
+        # 构建 data 子目录的路径
+        file_path = os.path.join(current_directory, path)
+        data_directory = os.path.dirname(file_path)
+        # 如果目录不存在，则创建它（包括所有父目录）
+        if not os.path.exists(data_directory):
+            os.makedirs(data_directory)
+        return file_path
+
+    def save_file_to_directory(self, file_path, content):
+        # 分离文件路径中的目录部分
+        directory = os.path.dirname(file_path)
+
+        # 确保目录存在
+        self.ensure_directory(directory)
+
+        # 保存文件
+        with open(file_path, 'w') as file:
+            file.write(content)
 
 class FilePreviewApi(Resource):
     @setup_required

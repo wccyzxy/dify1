@@ -1,4 +1,5 @@
 import logging
+import os
 from argparse import ArgumentTypeError
 from datetime import datetime, timezone
 
@@ -709,6 +710,8 @@ class DocumentDeleteApi(DocumentResource):
 
         try:
             DocumentService.delete_document(document)
+            file_path = os.path.join(os.getcwd(), 'data', f'{document.data_source_detail_dict["upload_file"]["id"]}.{document.data_source_detail_dict["upload_file"]["extension"]}')
+            os.remove(file_path)
         except services.errors.document.DocumentIndexingError:
             raise DocumentIndexingError('Cannot delete document during indexing.')
 
