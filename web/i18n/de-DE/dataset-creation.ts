@@ -57,6 +57,8 @@ const translation = {
     autoDescription: 'Stellt Chunk- und Vorverarbeitungsregeln automatisch ein. Unbekannten Benutzern wird dies empfohlen.',
     custom: 'Benutzerdefiniert',
     customDescription: 'Chunk-Regeln, Chunk-Länge und Vorverarbeitungsregeln usw. anpassen.',
+    noSegment: 'Keine Sharding durchführen',
+    noSegmentDescription: 'Durch die Verwendung von Segmentierung können Sie die Dokumente in kleinere Chunks teilen, um die Verarbeitungsgeschwindigkeit zu erhöhen.',
     separator: 'Segmentidentifikator',
     separatorPlaceholder: 'Zum Beispiel Neuer Absatz (\\\\n) oder spezieller Separator (wie "***")',
     maxLength: 'Maximale Chunk-Länge',

@@ -57,6 +57,8 @@ const translation = {
     autoDescription: '自動設定分段規則與預處理規則，如果不瞭解這些引數建議選擇此項',
     custom: '自定義',
     customDescription: '自定義分段規則、分段長度以及預處理規則等引數',
+    noSegment: '不進行分片',
+    noSegmentDescription: '不進行分片',
     separator: '分段識別符號',
     separatorPlaceholder: '例如換行符（\n）或特定的分隔符（如 "***"）',
     maxLength: '分段最大長度',

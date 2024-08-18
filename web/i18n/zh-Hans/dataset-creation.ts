@@ -86,6 +86,8 @@ const translation = {
     autoDescription: '自动设置分段规则与预处理规则，如果不了解这些参数建议选择此项',
     custom: '自定义',
     customDescription: '自定义分段规则、分段长度以及预处理规则等参数',
+    noSegment: '不进行分片',
+    noSegmentDescription: '不进行分片，直接将所有文本作为单个段落处理',
     separator: '分段标识符',
     separatorPlaceholder: '例如换行符（\n）或特定的分隔符（如 "***"）',
     maxLength: '分段最大长度',

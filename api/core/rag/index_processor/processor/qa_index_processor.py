@@ -39,26 +39,41 @@ class QAIndexProcessor(BaseIndexProcessor):
             # document clean
             document_text = CleanProcessor.clean(document.page_content, kwargs.get('process_rule'))
             document.page_content = document_text
-
-            # parse document to nodes
-            document_nodes = splitter.split_documents([document])
-            split_documents = []
-            for document_node in document_nodes:
-
-                if document_node.page_content.strip():
+            if kwargs.get('process_rule')['mode'] == "no_segment":
+                if document.page_content.strip():
                     doc_id = str(uuid.uuid4())
-                    hash = helper.generate_text_hash(document_node.page_content)
-                    document_node.metadata['doc_id'] = doc_id
-                    document_node.metadata['doc_hash'] = hash
+                    hash = helper.generate_text_hash(document.page_content)
+                    document.metadata['doc_id'] = doc_id
+                    document.metadata['doc_hash'] = hash
                     # delete Spliter character
-                    page_content = document_node.page_content
+                    page_content = document.page_content
                     if page_content.startswith(".") or page_content.startswith("。"):
-                        page_content = page_content[1:]
+                        page_content = page_content[1:].strip()
                     else:
                         page_content = page_content
-                    document_node.page_content = page_content
-                    split_documents.append(document_node)
-            all_documents.extend(split_documents)
+                    if len(page_content) > 0:
+                        document.page_content = page_content
+                        all_documents.append(document)
+            else:
+                # parse document to nodes
+                document_nodes = splitter.split_documents([document])
+                split_documents = []
+                for document_node in document_nodes:
+
+                    if document_node.page_content.strip():
+                        doc_id = str(uuid.uuid4())
+                        hash = helper.generate_text_hash(document_node.page_content)
+                        document_node.metadata['doc_id'] = doc_id
+                        document_node.metadata['doc_hash'] = hash
+                        # delete Spliter character
+                        page_content = document_node.page_content
+                        if page_content.startswith(".") or page_content.startswith("。"):
+                            page_content = page_content[1:]
+                        else:
+                            page_content = page_content
+                        document_node.page_content = page_content
+                        split_documents.append(document_node)
+                all_documents.extend(split_documents)
         for i in range(0, len(all_documents), 10):
             threads = []
             sub_documents = all_documents[i:i + 10]

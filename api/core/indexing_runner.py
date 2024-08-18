@@ -280,7 +280,7 @@ class IndexingRunner:
                 text_docs=text_docs,
                 splitter=splitter,
                 processing_rule=processing_rule
-            )
+            ) if not tmp_processing_rule["mode"] == 'no_segment' else text_docs
 
             total_segments += len(documents)
             for document in documents:

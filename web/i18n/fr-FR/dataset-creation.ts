@@ -57,6 +57,8 @@ const translation = {
     autoDescription: 'Définir automatiquement les règles de découpage et de prétraitement. Il est recommandé aux utilisateurs non familiers de sélectionner ceci.',
     custom: 'Personnalisé',
     customDescription: 'Personnalisez les règles de morceaux, la longueur des morceaux et les règles de prétraitement, etc.',
+    noSegment: 'Ne pas effectuer de découpage',
+    noSegmentDescription: 'Ne pas effectuer de découpage',
     separator: 'Identifiant de segment',
     separatorPlaceholder: 'Par exemple, nouvelle ligne (\\\\n) ou séparateur spécial (tel que "***")',
     maxLength: 'Longueur maximale du morceau',

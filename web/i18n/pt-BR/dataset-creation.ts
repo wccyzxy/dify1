@@ -57,6 +57,8 @@ const translation = {
     autoDescription: 'Configura automaticamente as regras de fragmentação e pré-processamento. Usuários não familiarizados são recomendados a selecionar esta opção.',
     custom: 'Personalizado',
     customDescription: 'Personalize as regras de fragmentação, comprimento dos fragmentos e regras de pré-processamento, etc.',
+    noSegment: 'Não realizar particionamento',
+    noSegmentDescription: 'Não realizar particionamento',
     separator: 'Identificador de segmento',
     separatorPlaceholder: 'Por exemplo, nova linha (\\\\n) ou separador especial (como "***")',
     maxLength: 'Comprimento máximo do fragmento',

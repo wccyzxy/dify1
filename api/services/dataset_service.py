@@ -747,6 +747,13 @@ class DocumentService:
                         rules=json.dumps(DatasetProcessRule.AUTOMATIC_RULES),
                         created_by=account.id
                     )
+                elif process_rule["mode"] == "no_segment":
+                    dataset_process_rule = DatasetProcessRule(
+                        dataset_id=dataset.id,
+                        mode=process_rule["mode"],
+                        rules=json.dumps(DatasetProcessRule.NO_SEGMENT_RULES),
+                        created_by=account.id
+                    )
                 db.session.add(dataset_process_rule)
                 db.session.commit()
             position = DocumentService.get_documents_position(dataset.id)
@@ -965,6 +972,13 @@ class DocumentService:
                     rules=json.dumps(DatasetProcessRule.AUTOMATIC_RULES),
                     created_by=account.id
                 )
+            elif process_rule["mode"] == "no_segment":
+                dataset_process_rule = DatasetProcessRule(
+                    dataset_id=dataset.id,
+                    mode=process_rule["mode"],
+                    rules=json.dumps(DatasetProcessRule.NO_SEGMENT_RULES),
+                    created_by=account.id
+                )
             db.session.add(dataset_process_rule)
             db.session.commit()
             document.dataset_process_rule_id = dataset_process_rule.id
@@ -1180,7 +1194,7 @@ class DocumentService:
         if args['process_rule']['mode'] not in DatasetProcessRule.MODES:
             raise ValueError("Process rule mode is invalid")
 
-        if args['process_rule']['mode'] == 'automatic':
+        if args['process_rule']['mode'] == 'automatic' or args['process_rule']['mode'] == 'no_segment':
             args['process_rule']['rules'] = {}
         else:
             if 'rules' not in args['process_rule'] or not args['process_rule']['rules']:
@@ -1255,7 +1269,7 @@ class DocumentService:
         if args['process_rule']['mode'] not in DatasetProcessRule.MODES:
             raise ValueError("Process rule mode is invalid")
 
-        if args['process_rule']['mode'] == 'automatic':
+        if args['process_rule']['mode'] == 'automatic' or args['process_rule']['mode'] == 'no_segment':
             args['process_rule']['rules'] = {}
         else:
             if 'rules' not in args['process_rule'] or not args['process_rule']['rules']:

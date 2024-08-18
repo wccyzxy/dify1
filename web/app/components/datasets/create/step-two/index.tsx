@@ -73,6 +73,7 @@ type StepTwoProps = {
 enum SegmentType {
   AUTO = 'automatic',
   CUSTOM = 'custom',
+  NO_SEGMENT = 'no_segment',
 }
 enum IndexingType {
   QUALIFIED = 'high_quality',
@@ -193,7 +194,7 @@ const StepTwo = ({
   const fetchFileIndexingEstimate = async (docForm = DocForm.TEXT) => {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     const res = await didFetchFileIndexingEstimate(getFileIndexingEstimateParams(docForm)!)
-    if (segmentationType === SegmentType.CUSTOM) {
+    if (segmentationType === SegmentType.CUSTOM || segmentationType === SegmentType.NO_SEGMENT) {
       setCustomFileIndexingEstimate(res)
     }
     else {
@@ -407,7 +408,7 @@ const StepTwo = ({
 
   const getDefaultMode = () => {
     if (documentDetail)
-      setSegmentationType(documentDetail.dataset_process_rule.mode)
+         (documentDetail.dataset_process_rule.mode)
   }
 
   const createHandle = async () => {
@@ -523,6 +524,11 @@ const StepTwo = ({
   useEffect(() => {
     if (segmentationType === SegmentType.AUTO) {
       setAutomaticFileIndexingEstimate(null)
+      !isMobile && setShowPreview()
+      fetchFileIndexingEstimate()
+      setPreviewSwitched(false)
+    } else if (segmentationType === SegmentType.NO_SEGMENT) {
+      setCustomFileIndexingEstimate(null)
       !isMobile && setShowPreview()
       fetchFileIndexingEstimate()
       setPreviewSwitched(false)
@@ -663,6 +669,21 @@ const StepTwo = ({
                   </div>
                 </div>
               )}
+            </div>
+            <div
+              className={cn(
+                s.radioItem,
+                s.segmentationItem,
+                segmentationType === SegmentType.NO_SEGMENT && s.active,
+              )}
+              onClick={() => setSegmentationType(SegmentType.NO_SEGMENT)}
+            >
+              <span className={cn(s.typeIcon, s.auto)} />
+              <span className={cn(s.radio)} />
+              <div className={s.typeHeader}>
+                <div className={s.title}>{t('datasetCreation.stepTwo.noSegment')}</div>
+                <div className={s.tip}>{t('datasetCreation.stepTwo.noSegmentDescription')}</div>
+              </div>
             </div>
           </div>
           <div className={s.label}>{t('datasetCreation.stepTwo.indexMode')}</div>

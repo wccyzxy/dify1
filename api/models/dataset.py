@@ -166,7 +166,7 @@ class DatasetProcessRule(db.Model):
     created_at = db.Column(db.DateTime, nullable=False,
                            server_default=db.text('CURRENT_TIMESTAMP(0)'))
 
-    MODES = ['automatic', 'custom']
+    MODES = ['automatic', 'custom', 'no_segment']
     PRE_PROCESSING_RULES = ['remove_stopwords', 'remove_extra_spaces', 'remove_urls_emails']
     AUTOMATIC_RULES = {
         'pre_processing_rules': [
@@ -177,6 +177,17 @@ class DatasetProcessRule(db.Model):
             'delimiter': '\n',
             'max_tokens': 500,
             'chunk_overlap': 50
+        }
+    }
+    NO_SEGMENT_RULES = {
+        'pre_processing_rules': [
+            {'id': 'remove_extra_spaces', 'enabled': True},
+            {'id': 'remove_urls_emails', 'enabled': False}
+        ],
+        'segmentation': {
+            'delimiter': '',
+            'max_tokens': -1,
+            'chunk_overlap': -1
         }
     }
 

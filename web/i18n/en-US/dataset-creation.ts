@@ -86,6 +86,8 @@ const translation = {
     autoDescription: 'Automatically set chunk and preprocessing rules. Unfamiliar users are recommended to select this.',
     custom: 'Custom',
     customDescription: 'Customize chunks rules, chunks length, and preprocessing rules, etc.',
+    noSegment: 'Do not perform sharding',
+    noSegmentDescription: 'No sharding will be performed, and the entire document will be processed as a single chunk.',
     separator: 'Segment identifier',
     separatorPlaceholder: 'For example, newline (\\\\n) or special separator (such as "***")',
     maxLength: 'Maximum chunk length',
