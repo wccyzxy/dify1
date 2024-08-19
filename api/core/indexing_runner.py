@@ -285,6 +285,38 @@ class IndexingRunner:
                 )
                 document_qa_list = self.format_split_text(response)
 
+                return {
+                    "total_segments": total_segments * 20,
+                    "qa_preview": document_qa_list,
+                    "preview": preview_texts
+                }
+        if doc_form and doc_form == 'qa_index':
+            if len(preview_texts) > 0:
+                # qa index document
+                document_qa_list = self.format_split_text_by_QA(preview_texts[0])
+                return {
+                    "total_segments": total_segments * 20,
+                    "qa_preview": document_qa_list,
+                    "preview": preview_texts
+                }
+        if embedding_model_instance:
+            embedding_model_type_instance = cast(TextEmbeddingModel, embedding_model_instance.model_type_instance)
+            embedding_price_info = embedding_model_type_instance.get_price(
+                model=embedding_model_instance.model,
+                credentials=embedding_model_instance.credentials,
+                price_type=PriceType.INPUT,
+                tokens=tokens
+            )
+            total_price = '{:f}'.format(embedding_price_info.total_amount)
+            currency = embedding_price_info.currency
+        return {
+            "total_segments": total_segments,
+            "tokens": tokens,
+            "total_price": total_price,
+            "currency": currency,
+            "preview": preview_texts
+        }
+
                 return {"total_segments": total_segments * 20, "qa_preview": document_qa_list, "preview": preview_texts}
         return {"total_segments": total_segments, "preview": preview_texts}
 
@@ -515,14 +547,34 @@ class IndexingRunner:
                 sub_documents = all_documents[i : i + 10]
                 for doc in sub_documents:
                     document_format_thread = threading.Thread(
-                        target=self.format_qa_document,
+                        target=self.format_qa_model_document,
                         kwargs={
                             "flask_app": current_app._get_current_object(),
                             "tenant_id": tenant_id,
                             "document_node": doc,
                             "all_qa_documents": all_qa_documents,
-                            "document_language": document_language,
-                        },
+                            "document_language": document_language
+                        }
+                    )
+                    threads.append(document_format_thread)
+                    document_format_thread.start()
+                for thread in threads:
+                    thread.join()
+            return all_qa_documents
+        if document_form == 'qa_index':
+            for i in range(0, len(all_documents), 10):
+                threads = []
+                sub_documents = all_documents[i:i + 10]
+                for doc in sub_documents:
+                    document_format_thread = threading.Thread(
+                        target=self.format_qa_index_document,
+                        kwargs={
+                            'flask_app': current_app._get_current_object(),
+                            'tenant_id': tenant_id,
+                            'document_node': doc,
+                            'all_qa_documents': all_qa_documents,
+                            'document_language': document_language
+                        }
                     )
                     threads.append(document_format_thread)
                     document_format_thread.start()
@@ -531,7 +583,7 @@ class IndexingRunner:
             return all_qa_documents
         return all_documents
 
-    def format_qa_document(self, flask_app: Flask, tenant_id: str, document_node, all_qa_documents, document_language):
+    def format_qa_model_document(self, flask_app: Flask, tenant_id: str, document_node, all_qa_documents, document_language):
         format_documents = []
         if document_node.page_content is None or not document_node.page_content.strip():
             return
@@ -550,6 +602,29 @@ class IndexingRunner:
                     qa_document.metadata["answer"] = result["answer"]
                     qa_document.metadata["doc_id"] = doc_id
                     qa_document.metadata["doc_hash"] = hash
+                    qa_documents.append(qa_document)
+                format_documents.extend(qa_documents)
+            except Exception as e:
+                logging.exception(e)
+
+            all_qa_documents.extend(format_documents)
+
+    def format_qa_index_document(self, flask_app: Flask, tenant_id: str, document_node, all_qa_documents, document_language):
+        format_documents = []
+        if document_node.page_content is None or not document_node.page_content.strip():
+            return
+        with flask_app.app_context():
+            try:
+                # qa index document
+                document_qa_list = self.format_split_text_by_QA(document_node.page_content)
+                qa_documents = []
+                for result in document_qa_list:
+                    qa_document = Document(page_content=result['question'], metadata=document_node.metadata.model_copy())
+                    doc_id = str(uuid.uuid4())
+                    hash = helper.generate_text_hash(result['question'])
+                    qa_document.metadata['answer'] = result['answer']
+                    qa_document.metadata['doc_id'] = doc_id
+                    qa_document.metadata['doc_hash'] = hash
                     qa_documents.append(qa_document)
                 format_documents.extend(qa_documents)
             except Exception as e:
@@ -623,7 +698,24 @@ class IndexingRunner:
         regex = r"Q\d+:\s*(.*?)\s*A\d+:\s*([\s\S]*?)(?=Q\d+:|$)"
         matches = re.findall(regex, text, re.UNICODE)
 
-        return [{"question": q, "answer": re.sub(r"\n\s*", "\n", a.strip())} for q, a in matches if q and a]
+        return [
+            {
+                "question": q,
+                "answer": re.sub(r"\n\s*", "\n", a.strip())
+            }
+            for q, a in matches if q and a
+        ]
+
+    def format_split_text_by_QA(self, text):
+        regex = r'"问题":"(.*?)";"回答":"(.*?)"'
+        matches = re.findall(regex, text, re.UNICODE | re.DOTALL)
+        return [
+            {
+                "question": q,
+                "answer": re.sub(r"\n\s*", "\n", a.strip())
+            }
+            for q, a in matches if q and a
+        ]
 
     def _load(
         self,

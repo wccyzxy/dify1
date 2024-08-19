@@ -65,14 +65,14 @@ class QAIndexProcessor(BaseIndexProcessor):
             sub_documents = all_documents[i : i + 10]
             for doc in sub_documents:
                 document_format_thread = threading.Thread(
-                    target=self._format_qa_document,
+                    target=self._format_qa_index_document,
                     kwargs={
-                        "flask_app": current_app._get_current_object(),
-                        "tenant_id": kwargs.get("tenant_id"),
-                        "document_node": doc,
-                        "all_qa_documents": all_qa_documents,
-                        "document_language": kwargs.get("doc_language", "English"),
-                    },
+                        'flask_app': current_app._get_current_object(),
+                        'tenant_id': kwargs.get('tenant_id'),
+                        'document_node': doc,
+                        'all_qa_documents': all_qa_documents,
+                        'document_language': kwargs.get('doc_language', 'English')
+                    }
                 )
                 threads.append(document_format_thread)
                 document_format_thread.start()
@@ -139,15 +139,14 @@ class QAIndexProcessor(BaseIndexProcessor):
                 docs.append(doc)
         return docs
 
-    def _format_qa_document(self, flask_app: Flask, tenant_id: str, document_node, all_qa_documents, document_language):
+    def _format_qa_index_document(self, flask_app: Flask, tenant_id: str, document_node, all_qa_documents, document_language):
         format_documents = []
         if document_node.page_content is None or not document_node.page_content.strip():
             return
         with flask_app.app_context():
             try:
-                # qa model document
-                response = LLMGenerator.generate_qa_document(tenant_id, document_node.page_content, document_language)
-                document_qa_list = self._format_split_text(response)
+                # qa index document
+                document_qa_list = self.format_splite_text_by_QA(document_node.page_content)
                 qa_documents = []
                 for result in document_qa_list:
                     qa_document = Document(page_content=result["question"], metadata=document_node.metadata.copy())
@@ -163,8 +162,13 @@ class QAIndexProcessor(BaseIndexProcessor):
 
             all_qa_documents.extend(format_documents)
 
-    def _format_split_text(self, text):
-        regex = r"Q\d+:\s*(.*?)\s*A\d+:\s*([\s\S]*?)(?=Q\d+:|$)"
-        matches = re.findall(regex, text, re.UNICODE)
-
-        return [{"question": q, "answer": re.sub(r"\n\s*", "\n", a.strip())} for q, a in matches if q and a]
+    def format_splite_text_by_QA(self, text):
+        regex = r'"问题":"(.*?)";"回答":"(.*?)"'
+        matches = re.findall(regex, text, re.UNICODE | re.DOTALL)
+        return [
+            {
+                "question": q,
+                "answer": re.sub(r"\n\s*", "\n", a.strip())
+            }
+            for q, a in matches if q and a
+        ]
