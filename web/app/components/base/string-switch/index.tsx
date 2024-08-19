@@ -3,15 +3,16 @@ import React, { useEffect, useState } from 'react'
 import { Switch as OriginalSwitch } from '@headlessui/react'
 import classNames from '@/utils/classnames'
 
-type SwitchProps = {
-  onChange?: (value: boolean) => void
+type StringSwitchProps = {
+  onChange?: (value: string) => void
   size?: 'sm' | 'md' | 'lg' | 'l'
   defaultValue?: boolean
   disabled?: boolean
   className?: string
+  prop?: string
 }
 
-const Switch = ({ onChange, size = 'lg', defaultValue = false, disabled = false, className, prop = ''}: SwitchProps) => {
+const StringSwitch = ({ onChange, size = 'lg', defaultValue = false, disabled = false, className, prop = ''}: StringSwitchProps) => {
   const [enabled, setEnabled] = useState(defaultValue)
   useEffect(() => {
     setEnabled(defaultValue)
@@ -43,7 +44,7 @@ const Switch = ({ onChange, size = 'lg', defaultValue = false, disabled = false,
         if (disabled)
           return
         setEnabled(checked)
-        onChange?.(checked)
+        onChange?.(prop)
       }}
       className={classNames(
         wrapStyle[size],
@@ -64,4 +65,4 @@ const Switch = ({ onChange, size = 'lg', defaultValue = false, disabled = false,
     </OriginalSwitch>
   )
 }
-export default React.memo(Switch)
+export default React.memo(StringSwitch)
