@@ -129,6 +129,7 @@ const StepTwo = ({
   )
   const [docLanguage, setDocLanguage] = useState<string>(locale !== LanguagesSupported[1] ? 'English' : 'Chinese')
   const [QATipHide, setQATipHide] = useState(false)
+  const [QAIndexTipHide, setQAIndexTipHide] = useState(false)
   const [previewSwitched, setPreviewSwitched] = useState(false)
   const [showPreview, { setTrue: setShowPreview, setFalse: hidePreview }] = useBoolean()
   const [customFileIndexingEstimate, setCustomFileIndexingEstimate] = useState<FileIndexingEstimateResponse | null>(null)
@@ -453,9 +454,11 @@ const StepTwo = ({
     }
   }
 
-  const handleSwitch = (state: boolean) => {
-    if (state)
+  const handleSwitch = (docform: String) => {
+    if (docform === DocForm.QA)
       setDocForm(DocForm.QA)
+    else if (docform === DocForm.QA_INDEX)
+      setDocForm(DocForm.QA_INDEX)
     else
       setDocForm(DocForm.TEXT)
   }
@@ -477,7 +480,10 @@ const StepTwo = ({
       setAutomaticFileIndexingEstimate(null)
     else
       setCustomFileIndexingEstimate(null)
-    await fetchFileIndexingEstimate(DocForm.QA)
+    if (docForm === DocForm.QA)
+      await fetchFileIndexingEstimate(DocForm.QA)
+    else if (docForm === DocForm.QA_INDEX)
+      await fetchFileIndexingEstimate(DocForm.QA_INDEX)
   }
 
   useEffect(() => {
@@ -761,32 +767,67 @@ const StepTwo = ({
               </div>
             )}
             {IS_CE_EDITION && indexType === IndexingType.QUALIFIED && (
-              <div className='mt-3 rounded-xl bg-gray-50 border border-gray-100'>
-                <div className='flex justify-between items-center px-5 py-4'>
-                  <div className='flex justify-center items-center w-8 h-8 rounded-lg bg-indigo-50'>
-                    <MessageChatSquare className='w-4 h-4' />
-                  </div>
-                  <div className='grow mx-3'>
-                    <div className='mb-[2px] text-md font-medium text-gray-900'>{t('datasetCreation.stepTwo.QATitle')}</div>
-                    <div className='inline-flex items-center text-[13px] leading-[18px] text-gray-500'>
-                      <span className='pr-1'>{t('datasetCreation.stepTwo.QALanguage')}</span>
-                      <LanguageSelect currentLanguage={docLanguage} onSelect={handleSelect} />
+              <div>
+                <div className='mt-3 rounded-xl bg-gray-50 border border-gray-100'>
+                  <div className='flex justify-between items-center px-5 py-4'>
+                    <div className='flex justify-center items-center w-8 h-8 rounded-lg bg-indigo-50'>
+                      <MessageChatSquare className='w-4 h-4' />
+                    </div>
+                    <div className='grow mx-3'>
+                      <div className='mb-[2px] text-md font-medium text-gray-900'>{t('datasetCreation.stepTwo.QATitle')}</div>
+                      <div className='inline-flex items-center text-[13px] leading-[18px] text-gray-500'>
+                        <span className='pr-1'>{t('datasetCreation.stepTwo.QALanguage')}</span>
+                        <LanguageSelect currentLanguage={docLanguage} onSelect={handleSelect} />
+                      </div>
+                    </div>
+                    <div className='shrink-0'>
+                      <Switch
+                        defaultValue={docForm === DocForm.QA}
+                        onChange={handleSwitch}
+                        prop={DocForm.QA}
+                        size='md'
+                      />
                     </div>
                   </div>
-                  <div className='shrink-0'>
-                    <Switch
-                      defaultValue={docForm === DocForm.QA}
-                      onChange={handleSwitch}
-                      size='md'
-                    />
-                  </div>
+                  {docForm === DocForm.QA && !QATipHide && (
+                    <div className='flex justify-between items-center px-5 py-2 bg-orange-50 border-t border-amber-100 rounded-b-xl text-[13px] leading-[18px] text-medium text-amber-500'>
+                      {t('datasetCreation.stepTwo.QATip')}
+                      <RiCloseLine className='w-4 h-4 text-gray-500 cursor-pointer' onClick={() => setQATipHide(true)} />
+                    </div>
+                  )}
                 </div>
-                {docForm === DocForm.QA && !QATipHide && (
-                  <div className='flex justify-between items-center px-5 py-2 bg-orange-50 border-t border-amber-100 rounded-b-xl text-[13px] leading-[18px] text-medium text-amber-500'>
-                    {t('datasetCreation.stepTwo.QATip')}
-                    <RiCloseLine className='w-4 h-4 text-gray-500 cursor-pointer' onClick={() => setQATipHide(true)} />
+              </div>
+            )}
+            {IS_CE_EDITION && indexType === IndexingType.ECONOMICAL && (
+              <div>
+                <div className='mt-3 rounded-xl bg-gray-50 border border-gray-100'>
+                  <div className='flex justify-between items-center px-5 py-4'>
+                    <div className='flex justify-center items-center w-8 h-8 rounded-lg bg-indigo-50'>
+                      <MessageChatSquare className='w-4 h-4' />
+                    </div>
+                    <div className='grow mx-3'>
+                      <div className='mb-[2px] text-md font-medium text-gray-900'>{t('datasetCreation.stepTwo.QAIndexTitle')}</div>
+                      <div className='inline-flex items-center text-[13px] leading-[18px] text-gray-500'>
+                        <span className='pr-1'>{t('datasetCreation.stepTwo.QAIndexLanguage')}</span>
+                        <LanguageSelect currentLanguage={docLanguage} onSelect={handleSelect} />
+                      </div>
+                    </div>
+                    <div className='shrink-0'>
+                      <Switch
+                        defaultValue={docForm === DocForm.QA_INDEX}
+                        onChange={handleSwitch}
+                        prop={DocForm.QA_INDEX}
+                        size='md'
+                      />
+                    </div>
                   </div>
-                )}
+                  {docForm === DocForm.QA_INDEX && !QAIndexTipHide && (
+                    <div className='flex justify-between items-center px-5 py-2 bg-orange-50 border-t border-amber-100 rounded-b-xl text-[13px] leading-[18px] text-medium text-amber-500'>
+                      {t('datasetCreation.stepTwo.QAIndexTip')}
+                      <RiCloseLine className='w-4 h-4 text-gray-500 cursor-pointer' onClick={() => setQAIndexTipHide(true)} />
+                    </div>
+                  )}
+                </div>
               </div>
             )}
             {/* Retrieval Method Config */}
@@ -933,7 +974,7 @@ const StepTwo = ({
             <div className='flex items-center justify-between px-8'>
               <div className='grow flex items-center'>
                 <div>{t('datasetCreation.stepTwo.previewTitle')}</div>
-                {docForm === DocForm.QA && !previewSwitched && (
+                {(docForm === DocForm.QA || docForm === DocForm.QA_INDEX) && !previewSwitched && (
                   <Button className='ml-2' variant='secondary-accent' onClick={previewSwitch}>{t('datasetCreation.stepTwo.previewButton')}</Button>
                 )}
               </div>
@@ -941,7 +982,7 @@ const StepTwo = ({
                 <XMarkIcon className='h-4 w-4'></XMarkIcon>
               </div>
             </div>
-            {docForm === DocForm.QA && !previewSwitched && (
+            {(docForm === DocForm.QA || docForm === DocForm.QA_INDEX) && !previewSwitched && (
               <div className='px-8 pr-12 text-xs text-gray-500'>
                 <span>{t('datasetCreation.stepTwo.previewSwitchTipStart')}</span>
                 <span className='text-amber-600'>{t('datasetCreation.stepTwo.previewSwitchTipEnd')}</span>
@@ -949,7 +990,7 @@ const StepTwo = ({
             )}
           </div>
           <div className='my-4 px-8 space-y-4'>
-            {previewSwitched && docForm === DocForm.QA && fileIndexingEstimate?.qa_preview && (
+            {previewSwitched && (docForm === DocForm.QA || docForm === DocForm.QA_INDEX) && fileIndexingEstimate?.qa_preview && (
               <>
                 {fileIndexingEstimate?.qa_preview.map((item, index) => (
                   <PreviewItem type={PreviewType.QA} key={item.question} qa={item} index={index + 1} />
@@ -963,7 +1004,7 @@ const StepTwo = ({
                 ))}
               </>
             )}
-            {previewSwitched && docForm === DocForm.QA && !fileIndexingEstimate?.qa_preview && (
+            {previewSwitched && (docForm === DocForm.QA || docForm === DocForm.QA_INDEX) && !fileIndexingEstimate?.qa_preview && (
               <div className='flex items-center justify-center h-[200px]'>
                 <Loading type='area' />
               </div>

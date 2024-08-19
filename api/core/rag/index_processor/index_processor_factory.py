@@ -4,6 +4,7 @@ from core.rag.index_processor.constant.index_type import IndexType
 from core.rag.index_processor.index_processor_base import BaseIndexProcessor
 from core.rag.index_processor.processor.paragraph_index_processor import ParagraphIndexProcessor
 from core.rag.index_processor.processor.qa_index_processor import QAIndexProcessor
+from core.rag.index_processor.processor.qa_model_index_processor import QAModelIndexProcessor
 
 
 class IndexProcessorFactory:
@@ -22,7 +23,8 @@ class IndexProcessorFactory:
         if self._index_type == IndexType.PARAGRAPH_INDEX.value:
             return ParagraphIndexProcessor()
         elif self._index_type == IndexType.QA_INDEX.value:
-
             return QAIndexProcessor()
+        elif self._index_type == IndexType.QA_MODEL_INDEX.value:
+            return QAModelIndexProcessor()
         else:
             raise ValueError(f"Index type {self._index_type} is not supported.")

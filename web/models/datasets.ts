@@ -445,6 +445,7 @@ export type SegmentUpdator = {
 export enum DocForm {
   TEXT = 'text_model',
   QA = 'qa_model',
+  QA_INDEX = 'qa_index',
 }
 
 export type ErrorDocsResponse = {

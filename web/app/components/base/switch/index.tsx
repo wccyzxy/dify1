@@ -4,14 +4,15 @@ import { Switch as OriginalSwitch } from '@headlessui/react'
 import classNames from '@/utils/classnames'
 
 type SwitchProps = {
-  onChange?: (value: boolean) => void
+  onChange?: (value: string) => void
   size?: 'sm' | 'md' | 'lg' | 'l'
   defaultValue?: boolean
   disabled?: boolean
   className?: string
+  prop?: string
 }
 
-const Switch = ({ onChange, size = 'lg', defaultValue = false, disabled = false, className }: SwitchProps) => {
+const Switch = ({ onChange, size = 'lg', defaultValue = false, disabled = false, className, prop = ''}: SwitchProps) => {
   const [enabled, setEnabled] = useState(defaultValue)
   useEffect(() => {
     setEnabled(defaultValue)
@@ -43,7 +44,7 @@ const Switch = ({ onChange, size = 'lg', defaultValue = false, disabled = false,
         if (disabled)
           return
         setEnabled(checked)
-        onChange?.(checked)
+        onChange?.(prop)
       }}
       className={classNames(
         wrapStyle[size],
