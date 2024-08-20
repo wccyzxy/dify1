@@ -35,7 +35,7 @@ import { formatNumber } from '@/utils/format'
 import type { NotionPage } from '@/models/common'
 import { DataSourceType, DocForm } from '@/models/datasets'
 import NotionIcon from '@/app/components/base/notion-icon'
-import Switch from '@/app/components/base/switch'
+import StringSwitch from '@/app/components/base/string-switch'
 import { MessageChatSquare } from '@/app/components/base/icons/src/public/common'
 import { useDatasetDetailContext } from '@/context/dataset-detail'
 import I18n from '@/context/i18n'
@@ -781,7 +781,7 @@ const StepTwo = ({
                       </div>
                     </div>
                     <div className='shrink-0'>
-                      <Switch
+                      <StringSwitch
                         defaultValue={docForm === DocForm.QA}
                         onChange={handleSwitch}
                         prop={DocForm.QA}
@@ -813,7 +813,7 @@ const StepTwo = ({
                       </div>
                     </div>
                     <div className='shrink-0'>
-                      <Switch
+                      <StringSwitch
                         defaultValue={docForm === DocForm.QA_INDEX}
                         onChange={handleSwitch}
                         prop={DocForm.QA_INDEX}
