@@ -45,8 +45,8 @@ type Props = {
 }
 
 const LEGACY_LINK_MAP = {
-  en_US: 'https://docs.dify.ai/guides/knowledge-base/integrate-knowledge-within-application',
-  zh_Hans: 'https://docs.dify.ai/v/zh-hans/guides/knowledge-base/integrate_knowledge_within_application',
+  en_US: '',
+  zh_Hans: '',
 } as Record<string, string>
 
 const ConfigContent: FC<Props> = ({

@@ -87,7 +87,7 @@ const CustomizeModal: FC<IShareLinkProps> = ({
           <div className='text-gray-500 text-xs mt-1 mb-2'>{t(`${prefixCustomize}.way1.step3Tip`)}</div>
           <pre className='overflow-x-scroll box-border py-3 px-4 bg-gray-100 text-xs font-medium rounded-lg select-text'>
             NEXT_PUBLIC_APP_ID={`'${appId}'`} <br />
-            NEXT_PUBLIC_APP_KEY={'\'<Web API Key From Dify>\''} <br />
+            NEXT_PUBLIC_APP_KEY={'\'<Web API Key>\''} <br />
             NEXT_PUBLIC_API_URL={`'${api_base_url}'`}
           </pre>
         </div>
@@ -100,13 +100,7 @@ const CustomizeModal: FC<IShareLinkProps> = ({
       <Button
         className='mt-2'
         onClick={() =>
-          window.open(
-            `https://docs.dify.ai/${locale !== LanguagesSupported[1]
-              ? 'user-guide/launching-dify-apps/developing-with-apis'
-              : `v/${locale.toLowerCase()}/guides/application-publishing/developing-with-apis`
-            }`,
-            '_blank',
-          )
+          console.log('待开发')
         }
       >
         <span className='text-sm text-gray-800'>{t(`${prefixCustomize}.way2.operation`)}</span>
