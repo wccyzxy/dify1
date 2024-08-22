@@ -10,7 +10,7 @@ import {
   useEmbeddedChatbotContext,
 } from './context'
 import { useEmbeddedChatbot } from './hooks'
-import { isHuanyu } from './utils'
+import { isDify } from './utils'
 import { useThemeContext } from './theme/theme-context'
 import cn from '@/utils/classnames'
 import { checkOrSetAccessToken } from '@/app/components/share/utils'
@@ -69,7 +69,7 @@ const Chatbot = () => {
       <Header
         isMobile={isMobile}
         title={site?.title || ''}
-        customerIcon={isHuanyu() ? HuanyuIcon : ''}
+        customerIcon={isDify() ? HuanyuIcon : ''}
         theme={themeBuilder?.theme}
         onCreateNewChat={handleNewConversation}
       />
