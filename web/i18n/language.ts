@@ -8,22 +8,6 @@ export type Item = {
 export type I18nText = {
   'en-US': string
   'zh-Hans': string
-  'pt-BR': string
-  'es-ES': string
-  'fr-FR': string
-  'de-DE': string
-  'ja-JP': string
-  'ko-KR': string
-  'ru-RU': string
-  'it-IT': string
-  'uk-UA': string
-  'vi-VN': string
-  'de_DE': string
-  'zh_Hant': string
-  'ro-RO': string
-  'pl-PL': string
-  'hi-IN': string
-  'fa-IR': string
 }
 
 export const languages = data.languages
