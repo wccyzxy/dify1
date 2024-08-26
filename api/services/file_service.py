@@ -67,13 +67,14 @@ class FileService:
             # end_user
             current_tenant_id = user.tenant_id
 
-        file_key = 'upload_files/' + current_tenant_id + '/' + file_uuid + '.' + extension
+        file_key = 'upload_files/' + file_uuid + '.' + extension
 
         # save file to storage
         storage.save(file_key, file_content)
 
         # save file to db
         upload_file = UploadFile(
+            id=file_uuid,
             tenant_id=current_tenant_id,
             storage_type=dify_config.STORAGE_TYPE,
             key=file_key,
@@ -99,13 +100,14 @@ class FileService:
             text_name = text_name[:200]
         # user uuid as file name
         file_uuid = str(uuid.uuid4())
-        file_key = 'upload_files/' + current_user.current_tenant_id + '/' + file_uuid + '.txt'
+        file_key = 'upload_files/' + file_uuid + '.txt'
 
         # save file to storage
         storage.save(file_key, text.encode('utf-8'))
 
         # save file to db
         upload_file = UploadFile(
+            id=file_uuid,
             tenant_id=current_user.current_tenant_id,
             storage_type=dify_config.STORAGE_TYPE,
             key=file_key,
