@@ -1,0 +1,27 @@
+identity:
+  name: extract_suolueyu
+  author: Wccyzxy
+  label:
+    en_US: Extract SuoLueYu from Xlsx to SuoLueYu json
+    zh_Hans: 从Xlsx文件中提取SuoLueYu的json
+    pt_BR: Extract SuoLueYu from Xlsx to SuoLueYu json
+description:
+  human:
+    en_US: Extract SuoLueYu from Xlsx to SuoLueYu json.
+    zh_Hans: 从Xlsx文件中提取SuoLueYu的json。
+    pt_BR: Extract SuoLueYu from Xlsx to SuoLueYu json.
+  llm: A tool for extracting suolueyu json from xlsx.
+parameters:
+  - name: file_source_id
+    type: string
+    required: true
+    label:
+      en_US: Xlsx file source id
+      zh_Hans: Xlsx
+      pt_BR: Xlsx file source id
+    human_description:
+      en_US: Xlsx file source id
+      zh_Hans: Xlsx文件源id
+      pt_BR: Xlsx file source id
+    llm_description: Xlsx file source id
+    form: llm
