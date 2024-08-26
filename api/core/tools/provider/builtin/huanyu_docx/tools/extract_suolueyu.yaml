@@ -1,0 +1,40 @@
+identity:
+  name: extract_suolueyu
+  author: Wccyzxy
+  label:
+    en_US: Extract SuoLueYu from Docx with given SuoLueYu json
+    zh_Hans: 从Docx文件中提取给定SuoLueYu的json
+    pt_BR: Extract SuoLueYu from Docx with given SuoLueYu json
+description:
+  human:
+    en_US: Extract SuoLueYu from Docx with given SuoLueYu json.
+    zh_Hans: 从Docx文件中提取给定SuoLueYu的json。
+    pt_BR: Extract SuoLueYu from Docx with given SuoLueYu json.
+  llm: A tool for transforming docx to list, including tables and text.
+parameters:
+  - name: file_source_id
+    type: string
+    required: true
+    label:
+      en_US: Docx file source id
+      zh_Hans: Docx文件源id
+      pt_BR: Docx file source id
+    human_description:
+      en_US: Docx file source id
+      zh_Hans: Docx文件源id
+      pt_BR: Docx file source id
+    llm_description: Docx file source id
+    form: llm
+  - name: xlsx_source_id
+    type: string
+    required: true
+    label:
+      en_US: SuoLueYu xlsx file source id
+      zh_Hans: SuoLueYu文件源id
+      pt_BR: SuoLueYu xlsx file source id
+    human_description:
+      en_US: SuoLueYu xlsx file source id
+      zh_Hans: SuoLueYu xlsx file source id
+      pt_BR: SuoLueYu xlsx file source id
+    llm_description: SuoLueYu xlsx file source id
+    form: llm

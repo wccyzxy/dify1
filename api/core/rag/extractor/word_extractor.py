@@ -15,6 +15,7 @@ from docx import Document as DocxDocument
 
 from configs import dify_config
 from core.rag.extractor.extractor_base import BaseExtractor
+from core.rag.extractor.util.docx_utils import DocxUtils
 from core.rag.models.document import Document
 from extensions.ext_database import db
 from extensions.ext_storage import storage
@@ -61,13 +62,25 @@ class WordExtractor(BaseExtractor):
 
     def extract(self) -> list[Document]:
         """Load given path as single page."""
-        content = self.parse_docx(self.file_path, "storage")
-        return [
-            Document(
-                page_content=content,
-                metadata={"source": self.file_path},
+        # content = self.parse_docx(self.file_path, "storage")
+        # return [
+        #     Document(
+        #         page_content=content,
+        #         metadata={"source": self.file_path},
+        #     )
+        # ]
+        doc_util = DocxUtils(chunk_size=5000)
+        content_list = doc_util.extract_to_list(self.file_path)
+        documents = []
+        for content in content_list:
+            documents.append(
+                Document(
+                    page_content=content,
+                    metadata={"source": self.file_path},
+                )
             )
-        ]
+        return documents
+        
 
     @staticmethod
     def _is_valid_url(url: str) -> bool:

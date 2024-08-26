@@ -388,16 +388,16 @@ class DatasetRetrieval:
         if not query:
             return
         dataset_queries = []
-        for dataset_id in dataset_ids:
-            dataset_query = DatasetQuery(
-                dataset_id=dataset_id,
-                content=query,
-                source="app",
-                source_app_id=app_id,
-                created_by_role=user_from,
-                created_by=user_id,
-            )
-            dataset_queries.append(dataset_query)
+        # for dataset_id in dataset_ids:
+        #     dataset_query = DatasetQuery(
+        #         dataset_id=dataset_id,
+        #         content=query,
+        #         # source="app",
+        #         # source_app_id=app_id,
+        #         # created_by_role=user_from,
+        #         # created_by=user_id,
+        #     )
+        #     dataset_queries.append(dataset_query)
         if dataset_queries:
             db.session.add_all(dataset_queries)
         db.session.commit()
