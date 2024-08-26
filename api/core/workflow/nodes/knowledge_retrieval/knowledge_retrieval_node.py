@@ -156,6 +156,8 @@ class KnowledgeRetrievalNode(BaseNode):
                 weights,
                 node_data.multiple_retrieval_config.reranking_enable,
             )
+            print(f"tenant_id: {self.tenant_id}")
+            print(f"multiple_retrieval_config: {node_data.multiple_retrieval_config}")
 
         context_list = []
         if all_documents:
