@@ -1,0 +1,15 @@
+identity:
+  author: Wccyzxy
+  name: huanyu_docx
+  label:
+    en_US: Docx
+    zh_Hans: Docx工具
+    pt_BR: Docx
+  description:
+    en_US: Docx file tool
+    zh_Hans: Docx文件处理工具
+    pt_BR: Docx file tool
+  icon: icon.svg
+  tags:
+    - productivity
+credentials_for_provider:
