@@ -11,6 +11,5 @@ identity:
     pt_BR: Xlsx file tool
   icon: icon.svg
   tags:
-    - docx
     - productivity
 credentials_for_provider:
