@@ -2,7 +2,7 @@ import re
 from typing import Optional
 
 import jieba
-import jieba.analyse
+from jieba.analyse import default_tfidf
 
 from core.rag.datasource.keyword.jieba.stopwords import STOPWORDS
 
@@ -10,7 +10,7 @@ from core.rag.datasource.keyword.jieba.stopwords import STOPWORDS
 class JiebaKeywordTableHandler:
 
     def __init__(self):
-        jieba.analyse.set_stop_words(STOPWORDS)
+        default_tfidf.stop_words = STOPWORDS
 
     def extract_keywords(self, text: str, max_keywords_per_chunk: Optional[int] = 10) -> set[str]:
         """Extract keywords with JIEBA tfidf."""
