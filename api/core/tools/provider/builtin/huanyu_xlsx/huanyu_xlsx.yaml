@@ -3,11 +3,11 @@ identity:
   name: huanyu_xlsx
   label:
     en_US: Xlsx
-    zh_Hans: Xlsx文件
+    zh_Hans: Xlsx宸ュ叿
     pt_BR: Xlsx
   description:
     en_US: Xlsx file tool
-    zh_Hans: Xlsx文件处理工具
+    zh_Hans: Xlsx鏂囦欢澶勭悊宸ュ叿
     pt_BR: Xlsx file tool
   icon: icon.svg
   tags:

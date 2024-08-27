@@ -3,7 +3,7 @@ from copy import deepcopy
 
 
 def doc_to_json(doc_path):
-    # ¼ÓÔØWordÎÄµµ
+    # åŠ è½½Wordæ–‡æ¡£
     doc = Document(doc_path)
 
     full_text = []
@@ -11,13 +11,13 @@ def doc_to_json(doc_path):
     body = doc.element.body
     table_title = ''
 
-    # ±éÀúbodyÔªËØÖĞµÄËùÓĞ×ÓÔªËØ
+    # éå†bodyå…ƒç´ ä¸­çš„æ‰€æœ‰å­å…ƒç´ 
     for element in body:
         if element.tag.endswith('p'):  # Check if it's a paragraph
-            # ÌáÈ¡¶ÎÂäÎÄ±¾
+            # æå–æ®µè½æ–‡æœ¬
             para_text = element.text
             if para_text:
-                # ¼ì²é¶ÎÂäÑùÊ½
+                # æ£€æŸ¥æ®µè½æ ·å¼
                 style_name = ''
                 try:
                     style_name = doc.styles.element.style_lst[int(element.style)].name_val if element.style else ''
@@ -34,12 +34,12 @@ def doc_to_json(doc_path):
                 elif style_name == 'heading 5':
                     full_text.append({'content': para_text, 'type': 'text', 'level': 5})
                 else:
-                    if para_text.startswith('±í '):
+                    if para_text.startswith('è¡¨ '):
                         table_title = para_text
                     else:
                         full_text.append({'content': para_text, 'type': 'text', 'level': -1})
         elif element.tag.endswith('tbl'):  # Check if it's a table
-            # ÌáÈ¡±í¸ñÊı¾İ
+            # æå–è¡¨æ ¼æ•°æ®
             table_data = []
             for row in element.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tr'):
                 row_data = []
@@ -54,7 +54,7 @@ def doc_to_json(doc_path):
 
 
 def doc_to_json_with_level(doc_path):
-    # ¼ÓÔØWordÎÄµµ
+    # åŠ è½½Wordæ–‡æ¡£
     doc = Document(doc_path)
 
     doc_json = {
@@ -69,13 +69,13 @@ def doc_to_json_with_level(doc_path):
 
     body = doc.element.body
 
-    # ±éÀúbodyÔªËØÖĞµÄËùÓĞ×ÓÔªËØ
+    # éå†bodyå…ƒç´ ä¸­çš„æ‰€æœ‰å­å…ƒç´ 
     for element in body:
         if element.tag.endswith('p'):  # Check if it's a paragraph
-            # ÌáÈ¡¶ÎÂäÎÄ±¾
+            # æå–æ®µè½æ–‡æœ¬
             para_text = element.text
             if para_text:
-                # ¼ì²é¶ÎÂäÑùÊ½
+                # æ£€æŸ¥æ®µè½æ ·å¼
                 style_name = ''
                 try:
                     style_name = doc.styles.element.style_lst[int(element.style)].name_val if element.style else ''
@@ -93,22 +93,22 @@ def doc_to_json_with_level(doc_path):
                 elif style_name == 'heading 5':
                     level = 5
                 if level > 0:
-                    # ´´½¨Ò»¸öĞÂµÄsection
+                    # åˆ›å»ºä¸€ä¸ªæ–°çš„section
                     new_section = {
                         'type': 'text',
                         'level': level,
                         'content': para_text,
                         'children': []
                     }
-                    # Èç¹ûĞÂ²ã¼¶Ğ¡ÓÚµÈÓÚÕ»¶¥ÔªËØµÄ²ã¼¶£¬Ôòµ¯³öÕ»¶¥ÔªËØÖ±µ½ÕÒµ½ºÏÊÊµÄ²ã¼¶
+                    # å¦‚æœæ–°å±‚çº§å°äºç­‰äºæ ˆé¡¶å…ƒç´ çš„å±‚çº§ï¼Œåˆ™å¼¹å‡ºæ ˆé¡¶å…ƒç´ ç›´åˆ°æ‰¾åˆ°åˆé€‚çš„å±‚çº§
                     while section_stack and section_stack[-1]['level'] and level <= section_stack[-1]['level']:
                         section_stack.pop()
 
-                    # ½«ĞÂ½ÚµãÌí¼Óµ½µ±Ç°²ã¼¶µÄÄ©Î²
+                    # å°†æ–°èŠ‚ç‚¹æ·»åŠ åˆ°å½“å‰å±‚çº§çš„æœ«å°¾
                     section_stack[-1]['children'].append(new_section)
                     section_stack.append(new_section)
                 else:
-                    if para_text.startswith('±í '):
+                    if para_text.startswith('è¡¨ '):
                         table_title = para_text
                     else:
                         current_section = section_stack[-1]
@@ -118,7 +118,7 @@ def doc_to_json_with_level(doc_path):
                             'content': para_text
                         })
         elif element.tag.endswith('tbl'):  # Check if it's a table
-            # ÌáÈ¡±í¸ñÊı¾İ
+            # æå–è¡¨æ ¼æ•°æ®
             table_data = []
             for row in element.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tr'):
                 row_data = []
@@ -177,11 +177,11 @@ def delete_table_with_title(document, expect_text):
 
 
 def extract_tables_from_docx(file_path):
-    # ´ò¿ªÎÄµµ
+    # æ‰“å¼€æ–‡æ¡£
     doc = Document(file_path)
 
     result = ""
-    # ±éÀúÎÄµµÖĞµÄËùÓĞ±í¸ñ
+    # éå†æ–‡æ¡£ä¸­çš„æ‰€æœ‰è¡¨æ ¼
     for i, table in enumerate(doc.tables):
         result += f"Table {i + 1}:\n"
         for row in table.rows:
@@ -195,41 +195,41 @@ def extract_tables_from_docx(file_path):
 
 
 def extract_paragraphs_from_docx(file_path):
-    # ´ò¿ªdocxÎÄ¼ş
+    # æ‰“å¼€docxæ–‡ä»¶
     doc = Document(file_path)
 
-    # ³õÊ¼»¯Ò»¸ö¿Õ×Ö·û´®À´´æ´¢ÎÄ±¾
+    # åˆå§‹åŒ–ä¸€ä¸ªç©ºå­—ç¬¦ä¸²æ¥å­˜å‚¨æ–‡æœ¬
     full_text = []
 
-    # ±éÀúÎÄµµÖĞµÄËùÓĞ¶ÎÂä
+    # éå†æ–‡æ¡£ä¸­çš„æ‰€æœ‰æ®µè½
     for para in doc.paragraphs:
         full_text.append(para.text)
 
-    # ½«ËùÓĞ¶ÎÂäµÄÎÄ±¾Á¬½Ó³ÉÒ»¸ö×Ö·û´®
+    # å°†æ‰€æœ‰æ®µè½çš„æ–‡æœ¬è¿æ¥æˆä¸€ä¸ªå­—ç¬¦ä¸²
     return '\n'.join(full_text)
 
 
 def extract_text_from_docx(file_path):
-    # ´ò¿ªdocxÎÄ¼ş
+    # æ‰“å¼€docxæ–‡ä»¶
     doc = Document(file_path)
 
-    # ³õÊ¼»¯Ò»¸ö¿ÕÁĞ±íÀ´´æ´¢ÎÄ±¾
+    # åˆå§‹åŒ–ä¸€ä¸ªç©ºåˆ—è¡¨æ¥å­˜å‚¨æ–‡æœ¬
     full_text = []
 
-    # ±éÀúÎÄµµÖĞµÄËùÓĞ¶ÎÂä
+    # éå†æ–‡æ¡£ä¸­çš„æ‰€æœ‰æ®µè½
     for para in doc.paragraphs:
-        text = para.text.strip()  # È¥³ı¶ÎÂäÎÄ±¾µÄÇ°ºó¿Õ°×
-        if text:  # Èç¹û¶ÎÂäÎÄ±¾²»Îª¿Õ£¬ÔòÌí¼Óµ½ÁĞ±íÖĞ
+        text = para.text.strip()  # å»é™¤æ®µè½æ–‡æœ¬çš„å‰åç©ºç™½
+        if text:  # å¦‚æœæ®µè½æ–‡æœ¬ä¸ä¸ºç©ºï¼Œåˆ™æ·»åŠ åˆ°åˆ—è¡¨ä¸­
             full_text.append(text)
 
-    # ±éÀúÎÄµµÖĞµÄËùÓĞ±í¸ñ
+    # éå†æ–‡æ¡£ä¸­çš„æ‰€æœ‰è¡¨æ ¼
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
                 for para in cell.paragraphs:
-                    text = para.text.strip()  # È¥³ı¶ÎÂäÎÄ±¾µÄÇ°ºó¿Õ°×
-                    if text:  # Èç¹û¶ÎÂäÎÄ±¾²»Îª¿Õ£¬ÔòÌí¼Óµ½ÁĞ±íÖĞ
+                    text = para.text.strip()  # å»é™¤æ®µè½æ–‡æœ¬çš„å‰åç©ºç™½
+                    if text:  # å¦‚æœæ®µè½æ–‡æœ¬ä¸ä¸ºç©ºï¼Œåˆ™æ·»åŠ åˆ°åˆ—è¡¨ä¸­
                         full_text.append(text)
 
-    # ½«ËùÓĞ¶ÎÂäºÍ±í¸ñµÄÎÄ±¾Á¬½Ó³ÉÒ»¸ö×Ö·û´®
+    # å°†æ‰€æœ‰æ®µè½å’Œè¡¨æ ¼çš„æ–‡æœ¬è¿æ¥æˆä¸€ä¸ªå­—ç¬¦ä¸²
     return '\n'.join(full_text)

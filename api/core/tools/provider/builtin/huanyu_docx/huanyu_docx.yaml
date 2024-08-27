@@ -3,11 +3,11 @@ identity:
   name: huanyu_docx
   label:
     en_US: Docx
-    zh_Hans: Docx文件
+    zh_Hans: Docx宸ュ叿
     pt_BR: Docx
   description:
     en_US: Docx file tool
-    zh_Hans: Docx文件处理工具
+    zh_Hans: Docx鏂囦欢澶勭悊宸ュ叿
     pt_BR: Docx file tool
   icon: icon.svg
   tags:

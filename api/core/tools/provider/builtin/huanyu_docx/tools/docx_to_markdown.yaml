@@ -3,12 +3,12 @@ identity:
   author: Wccyzxy
   label:
     en_US: Docx to markdown
-    zh_Hans: Docx×ªÎªMarkdownÎÄ¼ş
+    zh_Hans: Docxè½¬ä¸ºMarkdownæ–‡ä»¶
     pt_BR: Docx to markdown
 description:
   human:
     en_US: Transform docx to markdown, including tables and text.
-    zh_Hans: ½«docx×ªÎªMarkdownÎÄ¼ş£¬°üÀ¨±í¸ñºÍÎÄ±¾¡£
+    zh_Hans: å°†docxè½¬ä¸ºMarkdownæ–‡ä»¶ï¼ŒåŒ…æ‹¬è¡¨æ ¼å’Œæ–‡æœ¬ã€‚
     pt_BR: Transform docx to markdown, including tables and text.
   llm: A tool for transforming docx to markdown, including tables and text.
 parameters:
@@ -17,11 +17,11 @@ parameters:
     required: true
     label:
       en_US: Docx file source id
-      zh_Hans: DocxÎÄ¼şÔ´id
+      zh_Hans: Docxæ–‡ä»¶æºid
       pt_BR: Docx file source id
     human_description:
       en_US: Docx file source id
-      zh_Hans: DocxÎÄ¼şÔ´id
+      zh_Hans: Docxæ–‡ä»¶æºid
       pt_BR: Docx file source id
     llm_description: Docx file source id
     form: llm

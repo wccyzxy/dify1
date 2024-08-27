@@ -3,12 +3,12 @@ identity:
   author: Wccyzxy
   label:
     en_US: Extract SuoLueYu from Xlsx to SuoLueYu json
-    zh_Hans: ´ÓXlsxÎÄ¼şÖĞÌáÈ¡SuoLueYuµÄjson
+    zh_Hans: ä»Xlsxæ–‡ä»¶ä¸­æå–SuoLueYuçš„json
     pt_BR: Extract SuoLueYu from Xlsx to SuoLueYu json
 description:
   human:
     en_US: Extract SuoLueYu from Xlsx to SuoLueYu json.
-    zh_Hans: ´ÓXlsxÎÄ¼şÖĞÌáÈ¡SuoLueYuµÄjson¡£
+    zh_Hans: ä»Xlsxæ–‡ä»¶ä¸­æå–SuoLueYuçš„jsonã€‚
     pt_BR: Extract SuoLueYu from Xlsx to SuoLueYu json.
   llm: A tool for extracting suolueyu json from xlsx.
 parameters:
@@ -21,7 +21,7 @@ parameters:
       pt_BR: Xlsx file source id
     human_description:
       en_US: Xlsx file source id
-      zh_Hans: XlsxÎÄ¼şÔ´id
+      zh_Hans: Xlsxæ–‡ä»¶æºid
       pt_BR: Xlsx file source id
     llm_description: Xlsx file source id
     form: llm

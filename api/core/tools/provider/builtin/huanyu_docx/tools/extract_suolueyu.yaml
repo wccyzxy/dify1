@@ -3,12 +3,12 @@ identity:
   author: Wccyzxy
   label:
     en_US: Extract SuoLueYu from Docx with given SuoLueYu json
-    zh_Hans: ´ÓDocxÎÄ¼şÖĞÌáÈ¡¸ø¶¨SuoLueYuµÄjson
+    zh_Hans: ä»Docxæ–‡ä»¶ä¸­æå–ç»™å®šSuoLueYuçš„json
     pt_BR: Extract SuoLueYu from Docx with given SuoLueYu json
 description:
   human:
     en_US: Extract SuoLueYu from Docx with given SuoLueYu json.
-    zh_Hans: ´ÓDocxÎÄ¼şÖĞÌáÈ¡¸ø¶¨SuoLueYuµÄjson¡£
+    zh_Hans: ä»Docxæ–‡ä»¶ä¸­æå–ç»™å®šSuoLueYuçš„jsonã€‚
     pt_BR: Extract SuoLueYu from Docx with given SuoLueYu json.
   llm: A tool for transforming docx to list, including tables and text.
 parameters:
@@ -17,11 +17,11 @@ parameters:
     required: true
     label:
       en_US: Docx file source id
-      zh_Hans: DocxÎÄ¼şÔ´id
+      zh_Hans: Docxæ–‡ä»¶æºid
       pt_BR: Docx file source id
     human_description:
       en_US: Docx file source id
-      zh_Hans: DocxÎÄ¼şÔ´id
+      zh_Hans: Docxæ–‡ä»¶æºid
       pt_BR: Docx file source id
     llm_description: Docx file source id
     form: llm

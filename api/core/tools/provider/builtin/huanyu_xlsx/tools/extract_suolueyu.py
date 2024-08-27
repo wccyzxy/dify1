@@ -8,39 +8,39 @@ class ExtractSuolueyu(BuiltinTool):
     def _invoke(self, user_id: str, tool_parameters: dict) -> ToolInvokeMessage | list[ToolInvokeMessage]:
         file_source_id = tool_parameters.get("file_source_id", '')
         if not file_source_id:
-            return ToolInvokeMessage(message="Çë´«ÈëÎÄ¼şsource id", type="error")
+            return ToolInvokeMessage(message="è¯·ä¼ å…¥æ–‡ä»¶source id", type="error")
         file_path_list = self.find_files_by_id(file_source_id)
         if len(file_path_list) == 0:
-            return ToolInvokeMessage(message="Î´ÕÒµ½ÎÄ¼ş", type="error")
+            return ToolInvokeMessage(message="æœªæ‰¾åˆ°æ–‡ä»¶", type="error")
 
         file_path = file_path_list[0]
         if not file_path.endswith(".docx"):
-            return ToolInvokeMessage(message="´«ÈëÎÄ¼ş²»ÊÇdocxÎÄ¼ş", type="error")
+            return ToolInvokeMessage(message="ä¼ å…¥æ–‡ä»¶ä¸æ˜¯docxæ–‡ä»¶", type="error")
 
-        sheet_name = '»ã×Ü'
+        sheet_name = 'æ±‡æ€»'
         df = read_xlsx(file_path, sheet_name)
         json_data = convert_to_json(df)
         return json_data
 
     def find_files_by_id(self, id):
-        # »ñÈ¡µ±Ç°¹¤×÷Ä¿Â¼
+        # è·å–å½“å‰å·¥ä½œç›®å½•
         current_dir = os.getcwd()
-        # Ö¸¶¨ÒªËÑË÷µÄÎÄ¼ş¼Ğ
+        # æŒ‡å®šè¦æœç´¢çš„æ–‡ä»¶å¤¹
         data_folder = os.path.join(current_dir, 'data')
 
-        # ³õÊ¼»¯½á¹ûÁĞ±í
+        # åˆå§‹åŒ–ç»“æœåˆ—è¡¨
         result = []
 
-        # ±éÀúÎÄ¼ş¼Ğ¼°Æä×ÓÄ¿Â¼
+        # éå†æ–‡ä»¶å¤¹åŠå…¶å­ç›®å½•
         for root, dirs, files in os.walk(data_folder):
             for file in files:
-                # ·Ö¸îÎÄ¼şÃûºÍÀ©Õ¹Ãû
+                # åˆ†å‰²æ–‡ä»¶åå’Œæ‰©å±•å
                 name, extension = os.path.splitext(file)
-                # Èç¹ûÎÄ¼şÃû²¿·ÖÓëIDÆ¥Åä
+                # å¦‚æœæ–‡ä»¶åéƒ¨åˆ†ä¸IDåŒ¹é…
                 if name == str(id):
-                    # ¹¹½¨Ïà¶ÔÂ·¾¶
+                    # æ„å»ºç›¸å¯¹è·¯å¾„
                     relative_path = os.path.relpath(os.path.join(root, file), current_dir)
-                    # Ìí¼Óµ½½á¹ûÁĞ±í
+                    # æ·»åŠ åˆ°ç»“æœåˆ—è¡¨
                     result.append(relative_path)
 
         return result

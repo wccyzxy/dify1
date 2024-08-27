@@ -2,37 +2,37 @@ import pandas as pd
 import re
 
 
-# ¶ÁÈ¡xlsxÎÄ¼ş
+# è¯»å–xlsxæ–‡ä»¶
 def read_xlsx(file_path, sheet_name='Sheet1'):
     return pd.read_excel(file_path, sheet_name=sheet_name)
 
 
-# ÇåÀí×Ö·û´®
+# æ¸…ç†å­—ç¬¦ä¸²
 def clean_string(s):
     if pd.isna(s):
         return ""
-    # ½«ÖĞÎÄ¿Õ¸ñÌæ»»ÎªÓ¢ÎÄ¿Õ¸ñ
+    # å°†ä¸­æ–‡ç©ºæ ¼æ›¿æ¢ä¸ºè‹±æ–‡ç©ºæ ¼
     s = s.replace('\u3000', ' ')
-    # È¥³ıÇ°ºóµÄ¿Õ°××Ö·û
+    # å»é™¤å‰åçš„ç©ºç™½å­—ç¬¦
     s = s.strip()
-    # Ê¹ÓÃÕıÔò±í´ïÊ½Ìæ»»Á¬ĞøµÄ¿Õ¸ñÎªµ¥¸ö¿Õ¸ñ
+    # ä½¿ç”¨æ­£åˆ™è¡¨è¾¾å¼æ›¿æ¢è¿ç»­çš„ç©ºæ ¼ä¸ºå•ä¸ªç©ºæ ¼
     s = re.sub(r'\s+', ' ', s)
     return s
 
 
-# ½«Êı¾İ×ª»»ÎªJSON¸ñÊ½
+# å°†æ•°æ®è½¬æ¢ä¸ºJSONæ ¼å¼
 def convert_to_json(df):
     result = {}
     for _, row in df.iterrows():
         obj = {
-            "ĞòºÅ": clean_string(str(row["ĞòºÅ"])),
-            "ËõÂÔÓï": clean_string(row["ËõÂÔÓï"]),
-            "Ó¢ÎÄÈ«³Æ": clean_string(row["Ó¢ÎÄÈ«³Æ"]),
-            "ÖĞÎÄÈ«³Æ": clean_string(row["ÖĞÎÄÈ«³Æ"])
+            "åºå·": clean_string(str(row["åºå·"])),
+            "ç¼©ç•¥è¯­": clean_string(row["ç¼©ç•¥è¯­"]),
+            "è‹±æ–‡å…¨ç§°": clean_string(row["è‹±æ–‡å…¨ç§°"]),
+            "ä¸­æ–‡å…¨ç§°": clean_string(row["ä¸­æ–‡å…¨ç§°"])
         }
-        # Ê¹ÓÃÇåÀíºóµÄÓ¢ÎÄÈ«³Æ×÷Îª¼ü
-        key = clean_string(row["ËõÂÔÓï"])
-        if key:  # Ö»ÓĞµ±¼ü²»Îª¿ÕÊ±²ÅÌí¼Ó
+        # ä½¿ç”¨æ¸…ç†åçš„è‹±æ–‡å…¨ç§°ä½œä¸ºé”®
+        key = clean_string(row["ç¼©ç•¥è¯­"])
+        if key:  # åªæœ‰å½“é”®ä¸ä¸ºç©ºæ—¶æ‰æ·»åŠ 
             if key in result:
                 result[key].append(obj)
             else:
@@ -41,14 +41,14 @@ def convert_to_json(df):
 
 
 def extract_suolueyu_json_from_xlsx(input_file, sheet_name='Sheet1'):
-    sheet_name = '»ã×Ü'
+    sheet_name = 'æ±‡æ€»'
     df = read_xlsx(input_file, sheet_name)
     json_data = convert_to_json(df)
     return json_data
 
 
 if __name__ == "__main__":
-    input_file = 'AIËõÂÔÓï¿â20240718.xlsx'  # Ìæ»»ÎªÄúµÄÊäÈëÎÄ¼şÃû
-    output_file = 'AIËõÂÔÓï¿â20240718.json'  # Êä³öÎÄ¼şÃû
-    sheet_name = '»ã×Ü'  # Ìæ»»ÎªÄúµÄ¹¤×÷±íÃû³Æ
+    input_file = 'AIç¼©ç•¥è¯­åº“20240718.xlsx'  # æ›¿æ¢ä¸ºæ‚¨çš„è¾“å…¥æ–‡ä»¶å
+    output_file = 'AIç¼©ç•¥è¯­åº“20240718.json'  # è¾“å‡ºæ–‡ä»¶å
+    sheet_name = 'æ±‡æ€»'  # æ›¿æ¢ä¸ºæ‚¨çš„å·¥ä½œè¡¨åç§°
     extract_suolueyu_json_from_xlsx(input_file, sheet_name)
