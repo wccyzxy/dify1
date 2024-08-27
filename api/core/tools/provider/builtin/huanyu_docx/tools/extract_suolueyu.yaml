@@ -26,7 +26,7 @@ parameters:
     llm_description: Docx file source id
     form: llm
   - name: suolueyu_json
-    type: object
+    type: string
     required: true
     label:
       en_US: SuoLueYu json

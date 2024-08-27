@@ -1,3 +1,5 @@
+import json
+
 from core.tools.entities.tool_entities import ToolInvokeMessage
 from core.tools.tool.builtin_tool import BuiltinTool
 from core.tools.provider.builtin.huanyu_docx.utils.docx_utils import doc_to_json, extract_text_from_docx
@@ -18,7 +20,8 @@ class ExtractSuolueyu(BuiltinTool):
         if not file_path.endswith(".docx"):
             return ToolInvokeMessage(message="传入文件不是docx文件", type="error")
 
-        suolueyu_json = tool_parameters.get("suolueyu_json", {})
+        suolueyu_json_str = tool_parameters.get("suolueyu_json", '{}')
+        suolueyu_json = json.loads(suolueyu_json_str)
         if suolueyu_json == {}:
             return ToolInvokeMessage(message="请传入suolueyu_json", type="error")
         self.ac = ac()
