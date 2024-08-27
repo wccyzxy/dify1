@@ -1,6 +1,6 @@
 from core.tools.entities.tool_entities import ToolInvokeMessage
 from core.tools.tool.builtin_tool import BuiltinTool
-from core.tools.provider.builtin.huanyu_docx.utils.xlsx_utils import read_xlsx, convert_to_json
+from core.tools.provider.builtin.huanyu_xlsx.utils.xlsx_utils import read_xlsx, convert_to_json
 import os
 
 
