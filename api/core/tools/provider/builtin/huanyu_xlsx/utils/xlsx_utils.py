@@ -25,10 +25,10 @@ def convert_to_json(df):
     result = {}
     for _, row in df.iterrows():
         obj = {
-            "序号": clean_string(str(row["序号"])),
-            "缩略语": clean_string(row["缩略语"]),
-            "英文全称": clean_string(row["英文全称"]),
-            "中文全称": clean_string(row["中文全称"])
+            "num": clean_string(str(row["序号"])),
+            "short": clean_string(row["缩略语"]),
+            "all_en": clean_string(row["英文全称"]),
+            "all_zn": clean_string(row["中文全称"])
         }
         # 使用清理后的英文全称作为键
         key = clean_string(row["缩略语"])
