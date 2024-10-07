@@ -69,7 +69,7 @@ class WordExtractor(BaseExtractor):
         #         metadata={"source": self.file_path},
         #     )
         # ]
-        doc_util = DocxUtils(chunk_size=5000)
+        doc_util = DocxUtils(chunk_size=1500)
         content_list = doc_util.extract_to_list(self.file_path)
         documents = []
         for content in content_list:
