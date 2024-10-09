@@ -19,7 +19,7 @@ class AcAutomation:
     def split_into_sentences(self, text):
         sentences = []
         # 使用正则表达式找到所有句子结束符号的位置
-        sentence_ends = [match.start() for match in re.finditer(r'[\.\?!\n]', text)]
+        sentence_ends = [match.start() for match in re.finditer(r'[\n]', text)]
 
         # 添加文本末尾作为最后一个句子结束位置
         sentence_ends.append(len(text))
@@ -66,7 +66,10 @@ class AcAutomation:
         # 查找匹配并保存所在句子
         matches_with_sentences = []
         node = self.root
+        count_separator = 0
         for i in range(len(text)):
+            if text[i] == '\n':
+                count_separator += 1
             while node and text[i] not in node.children:
                 node = node.fail
             if not node:
@@ -82,7 +85,7 @@ class AcAutomation:
                             not (start_index + len(temp_node.word) < len(text) and text[
                                 start_index + len(temp_node.word)] in string.ascii_letters):
                         # 寻找该单词所在句子
-                        sentence_start = max(start for start in sentence_starts.keys() if start <= start_index)
+                        sentence_start = max(start for start in sentence_starts.keys() if start <= start_index - count_separator)
                         sentence = sentence_starts[sentence_start]
                         matches_with_sentences.append((start_index, temp_node.word, sentence))
                 temp_node = temp_node.fail
