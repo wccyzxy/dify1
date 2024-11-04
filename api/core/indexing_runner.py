@@ -299,25 +299,7 @@ class IndexingRunner:
                     "qa_preview": document_qa_list,
                     "preview": preview_texts
                 }
-        if embedding_model_instance:
-            embedding_model_type_instance = cast(TextEmbeddingModel, embedding_model_instance.model_type_instance)
-            embedding_price_info = embedding_model_type_instance.get_price(
-                model=embedding_model_instance.model,
-                credentials=embedding_model_instance.credentials,
-                price_type=PriceType.INPUT,
-                tokens=tokens
-            )
-            total_price = '{:f}'.format(embedding_price_info.total_amount)
-            currency = embedding_price_info.currency
-        return {
-            "total_segments": total_segments,
-            "tokens": tokens,
-            "total_price": total_price,
-            "currency": currency,
-            "preview": preview_texts
-        }
 
-                return {"total_segments": total_segments * 20, "qa_preview": document_qa_list, "preview": preview_texts}
         return {"total_segments": total_segments, "preview": preview_texts}
 
     def _extract(
