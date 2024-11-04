@@ -34,6 +34,7 @@ class AppMode(Enum):
     ADVANCED_CHAT = "advanced-chat"
     AGENT_CHAT = "agent-chat"
     CHANNEL = "channel"
+    PIPELINE_CHAT = "pipeline-chat"
 
     @classmethod
     def value_of(cls, value: str) -> "AppMode":

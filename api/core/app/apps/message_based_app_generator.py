@@ -16,6 +16,7 @@ from core.app.entities.app_invoke_entities import (
     ChatAppGenerateEntity,
     CompletionAppGenerateEntity,
     InvokeFrom,
+    PipelineChatAppGenerateEntity,
 )
 from core.app.entities.task_entities import (
     ChatbotAppBlockingResponse,
@@ -42,6 +43,7 @@ class MessageBasedAppGenerator(BaseAppGenerator):
             CompletionAppGenerateEntity,
             AgentChatAppGenerateEntity,
             AdvancedChatAppGenerateEntity,
+            PipelineChatAppGenerateEntity,
         ],
         queue_manager: AppQueueManager,
         conversation: Conversation,
@@ -134,6 +136,7 @@ class MessageBasedAppGenerator(BaseAppGenerator):
             CompletionAppGenerateEntity,
             AgentChatAppGenerateEntity,
             AdvancedChatAppGenerateEntity,
+            PipelineChatAppGenerateEntity,
         ],
         conversation: Optional[Conversation] = None,
     ) -> tuple[Conversation, Message]:
@@ -160,6 +163,11 @@ class MessageBasedAppGenerator(BaseAppGenerator):
             override_model_configs = None
             model_provider = None
             model_id = None
+        elif isinstance(application_generate_entity, PipelineChatAppGenerateEntity):
+            app_model_config_id = app_config.app_model_config_id
+            model_provider = None
+            model_id = None
+            override_model_configs = None
         else:
             app_model_config_id = app_config.app_model_config_id
             model_provider = application_generate_entity.model_conf.provider

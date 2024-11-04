@@ -165,6 +165,16 @@ class AdvancedChatAppGenerateEntity(AppGenerateEntity):
     single_iteration_run: Optional[SingleIterationRunEntity] = None
 
 
+class PipelineChatAppGenerateEntity(AppGenerateEntity):
+    """
+    Pipeline Chat Application Generate Entity.
+    """
+
+    conversation_id: Optional[str] = None
+    parent_message_id: Optional[str] = None
+    query: str
+
+
 class WorkflowAppGenerateEntity(AppGenerateEntity):
     """
     Workflow Application Generate Entity.

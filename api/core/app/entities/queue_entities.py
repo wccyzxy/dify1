@@ -24,6 +24,9 @@ class QueueEvent(str, Enum):
     WORKFLOW_STARTED = "workflow_started"
     WORKFLOW_SUCCEEDED = "workflow_succeeded"
     WORKFLOW_FAILED = "workflow_failed"
+    PIPELINE_STARTED = "pipeline_started"
+    PIPELINE_SUCCEEDED = "pipeline_succeeded"
+    PIPELINE_FAILED = "pipeline_failed"
     ITERATION_START = "iteration_start"
     ITERATION_NEXT = "iteration_next"
     ITERATION_COMPLETED = "iteration_completed"
@@ -245,6 +248,30 @@ class QueueWorkflowFailedEvent(AppQueueEvent):
     """
 
     event: QueueEvent = QueueEvent.WORKFLOW_FAILED
+    error: str
+
+class QueuePipelineStartedEvent(AppQueueEvent):
+    """
+    QueuePipelineStartedEvent entity
+    """
+
+    event: QueueEvent = QueueEvent.PIPELINE_STARTED
+
+class QueuePipelineSucceededEvent(AppQueueEvent):
+    """
+    QueuePipelineSucceededEvent entity
+    """
+
+    event: QueueEvent = QueueEvent.PIPELINE_SUCCEEDED
+    outputs: Optional[dict[str, Any]] = None
+
+
+class QueuePipelineFailedEvent(AppQueueEvent):
+    """
+    QueuePipelineFailedEvent entity
+    """
+
+    event: QueueEvent = QueueEvent.PIPELINE_FAILED
     error: str
 
 

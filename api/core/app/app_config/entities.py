@@ -251,3 +251,11 @@ class WorkflowUIBasedAppConfig(AppConfig):
     """
 
     workflow_id: str
+
+class PipelineChatAppConfig(AppConfig):
+    """
+    Pipeline Chat App Config Entity.
+    """
+
+    app_model_config_id: str
+    app_model_config_dict: dict

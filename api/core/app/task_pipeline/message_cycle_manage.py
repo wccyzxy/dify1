@@ -8,6 +8,7 @@ from core.app.entities.app_invoke_entities import (
     AgentChatAppGenerateEntity,
     ChatAppGenerateEntity,
     CompletionAppGenerateEntity,
+    PipelineChatAppGenerateEntity,
 )
 from core.app.entities.queue_entities import (
     QueueAnnotationReplyEvent,
@@ -19,6 +20,7 @@ from core.app.entities.task_entities import (
     MessageFileStreamResponse,
     MessageReplaceStreamResponse,
     MessageStreamResponse,
+    PipelineTaskState,
     WorkflowTaskState,
 )
 from core.llm_generator.llm_generator import LLMGenerator
@@ -30,9 +32,9 @@ from services.annotation_service import AppAnnotationService
 
 class MessageCycleManage:
     _application_generate_entity: Union[
-        ChatAppGenerateEntity, CompletionAppGenerateEntity, AgentChatAppGenerateEntity, AdvancedChatAppGenerateEntity
+        ChatAppGenerateEntity, CompletionAppGenerateEntity, AgentChatAppGenerateEntity, AdvancedChatAppGenerateEntity, PipelineChatAppGenerateEntity
     ]
-    _task_state: Union[EasyUITaskState, WorkflowTaskState]
+    _task_state: Union[EasyUITaskState, WorkflowTaskState, PipelineTaskState]
 
     def _generate_conversation_name(self, conversation: Conversation, query: str) -> Optional[Thread]:
         """

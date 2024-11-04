@@ -31,6 +31,13 @@ class WorkflowTaskState(TaskState):
 
     answer: str = ""
 
+class PipelineTaskState(TaskState):
+    """
+    PipelineTaskState entity
+    """
+
+    answer: str = ""
+
 
 class StreamEvent(Enum):
     """
