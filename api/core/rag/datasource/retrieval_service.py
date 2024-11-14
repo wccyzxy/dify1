@@ -1,6 +1,7 @@
 import threading
 from typing import Optional
 
+from core.rag.datasource.utils.common import parse_extraction_query
 from flask import Flask, current_app
 
 from core.rag.data_post_processor.data_post_processor import DataPostProcessor

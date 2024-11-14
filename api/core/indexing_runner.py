@@ -173,6 +173,7 @@ class IndexingRunner:
                                 "doc_id": document_segment.index_node_id,
                                 "doc_hash": document_segment.index_node_hash,
                                 "document_id": document_segment.document_id,
+                                "document_name": document_segment.document.name,
                                 "dataset_id": document_segment.dataset_id,
                             },
                         )
@@ -299,25 +300,6 @@ class IndexingRunner:
                     "qa_preview": document_qa_list,
                     "preview": preview_texts
                 }
-        if embedding_model_instance:
-            embedding_model_type_instance = cast(TextEmbeddingModel, embedding_model_instance.model_type_instance)
-            embedding_price_info = embedding_model_type_instance.get_price(
-                model=embedding_model_instance.model,
-                credentials=embedding_model_instance.credentials,
-                price_type=PriceType.INPUT,
-                tokens=tokens
-            )
-            total_price = '{:f}'.format(embedding_price_info.total_amount)
-            currency = embedding_price_info.currency
-        return {
-            "total_segments": total_segments,
-            "tokens": tokens,
-            "total_price": total_price,
-            "currency": currency,
-            "preview": preview_texts
-        }
-
-                return {"total_segments": total_segments * 20, "qa_preview": document_qa_list, "preview": preview_texts}
         return {"total_segments": total_segments, "preview": preview_texts}
 
     def _extract(
@@ -397,6 +379,7 @@ class IndexingRunner:
         for text_doc in text_docs:
             text_doc.metadata["document_id"] = dataset_document.id
             text_doc.metadata["dataset_id"] = dataset_document.dataset_id
+            text_doc.metadata["document_name"] = dataset_document.name
 
         return text_docs
 
@@ -893,6 +876,7 @@ class IndexingRunner:
                     "doc_id": segment.index_node_id,
                     "doc_hash": segment.index_node_hash,
                     "document_id": segment.document_id,
+                    "document_name": segment.document.name,
                     "dataset_id": segment.dataset_id,
                 },
             )

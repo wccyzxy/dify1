@@ -27,7 +27,7 @@ class AbstractVectorFactory(ABC):
 class Vector:
     def __init__(self, dataset: Dataset, attributes: list = None):
         if attributes is None:
-            attributes = ["doc_id", "dataset_id", "document_id", "doc_hash"]
+            attributes = ["doc_id", "dataset_id", "document_id", "doc_hash", "document_name"]
         self._dataset = dataset
         self._embeddings = self._get_embeddings()
         self._attributes = attributes
@@ -129,6 +129,7 @@ class Vector:
 
     def search_by_vector(self, query: str, **kwargs: Any) -> list[Document]:
         query_vector = self._embeddings.embed_query(query)
+        kwargs["query"] = query
         return self._vector_processor.search_by_vector(query_vector, **kwargs)
 
     def search_by_full_text(self, query: str, **kwargs: Any) -> list[Document]:

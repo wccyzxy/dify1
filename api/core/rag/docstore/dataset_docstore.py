@@ -54,6 +54,7 @@ class DatasetDocumentStore:
                     "doc_id": document_segment.index_node_id,
                     "doc_hash": document_segment.index_node_hash,
                     "document_id": document_segment.document_id,
+                    "document_name": document_segment.document.name,
                     "dataset_id": document_segment.dataset_id,
                 },
             )
@@ -147,6 +148,7 @@ class DatasetDocumentStore:
                 "doc_id": document_segment.index_node_id,
                 "doc_hash": document_segment.index_node_hash,
                 "document_id": document_segment.document_id,
+                "document_name": document_segment.document.name,
                 "dataset_id": document_segment.dataset_id,
             },
         )

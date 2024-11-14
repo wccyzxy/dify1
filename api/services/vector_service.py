@@ -19,6 +19,7 @@ class VectorService:
                     "doc_id": segment.index_node_id,
                     "doc_hash": segment.index_node_hash,
                     "document_id": segment.document_id,
+                    "document_name": segment.document.name,
                     "dataset_id": segment.dataset_id,
                 },
             )
@@ -47,6 +48,7 @@ class VectorService:
                 "doc_id": segment.index_node_id,
                 "doc_hash": segment.index_node_hash,
                 "document_id": segment.document_id,
+                "document_name": segment.document.name,
                 "dataset_id": segment.dataset_id,
             },
         )
