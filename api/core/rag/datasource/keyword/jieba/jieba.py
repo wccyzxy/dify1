@@ -11,7 +11,8 @@ from core.rag.models.document import Document
 from extensions.ext_database import db
 from extensions.ext_redis import redis_client
 from extensions.ext_storage import storage
-from models.dataset import Dataset, DatasetKeywordTable, DocumentSegment
+from models.dataset import Dataset, DatasetKeywordTable, DocumentSegment, Document as DocumentModel
+from core.rag.datasource.utils.common import parse_extraction_query
 
 
 class KeywordTableConfig(BaseModel):
@@ -80,15 +81,27 @@ class Jieba(BaseKeyword):
 
         k = kwargs.get("top_k", 4)
 
+        query_info = parse_extraction_query(query)  
         sorted_chunk_indices = self._retrieve_ids_by_query(keyword_table, query, k)
 
         documents = []
+        
         for chunk_index in sorted_chunk_indices:
-            segment = (
-                db.session.query(DocumentSegment)
-                .filter(DocumentSegment.dataset_id == self.dataset.id, DocumentSegment.index_node_id == chunk_index)
-                .first()
-            )
+            if query_info["filename"]:
+                segment = (
+                    db.session.query(DocumentSegment)
+                    .filter(DocumentSegment.dataset_id == self.dataset.id, DocumentSegment.index_node_id == chunk_index, 
+                            DocumentSegment.document_id.in_(
+                                db.session.query(DocumentModel.id).filter(DocumentModel.name.contains(query_info["filename"]))
+                            ))
+                    .first()
+                )
+            else:
+                segment = (
+                    db.session.query(DocumentSegment)
+                    .filter(DocumentSegment.dataset_id == self.dataset.id, DocumentSegment.index_node_id == chunk_index)
+                    .first()
+                )
 
             if segment:
                 documents.append(
@@ -98,6 +111,7 @@ class Jieba(BaseKeyword):
                             "doc_id": chunk_index,
                             "doc_hash": segment.index_node_hash,
                             "document_id": segment.document_id,
+                            "document_name": segment.document.name,
                             "dataset_id": segment.dataset_id,
                         },
                     )

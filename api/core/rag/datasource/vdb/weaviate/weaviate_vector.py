@@ -13,6 +13,7 @@ from core.rag.datasource.vdb.vector_base import BaseVector
 from core.rag.datasource.vdb.vector_factory import AbstractVectorFactory
 from core.rag.datasource.vdb.vector_type import VectorType
 from core.rag.models.document import Document
+from core.rag.datasource.utils.common import parse_extraction_query
 from extensions.ext_redis import redis_client
 from models.dataset import Dataset
 
@@ -109,7 +110,7 @@ class WeaviateVector(BaseVector):
                 if metadatas is not None:
                     for key, val in metadatas[i].items():
                         data_properties[key] = self._json_serializable(val)
-
+                print(f"data_properties: {data_properties}")
                 batch.add_data_object(
                     data_object=data_properties,
                     class_name=self._collection_name,
@@ -186,8 +187,30 @@ class WeaviateVector(BaseVector):
         query_obj = self._client.query.get(collection_name, properties)
 
         vector = {"vector": query_vector}
-        if kwargs.get("where_filter"):
-            query_obj = query_obj.with_where(kwargs.get("where_filter"))
+        query = kwargs.get("query")
+        query_info = parse_extraction_query(query)
+        doc_name_filter = (
+            {
+                "operator": "Like",
+                "path": ["document_name"],
+                "valueText": f"*{query_info['filename']}*",
+            }
+            if query_info["filename"]
+            else None
+        )
+        # 合并过滤条件
+        where_filter = kwargs.get("where_filter")
+        if where_filter and doc_name_filter:
+            where_filter = {
+                "operator": "And",
+                "operands": [where_filter, doc_name_filter],
+            }
+        elif doc_name_filter:
+            where_filter = doc_name_filter
+            
+        # 应用过滤条件
+        if where_filter:
+            query_obj = query_obj.with_where(where_filter)
         result = (
             query_obj.with_near_vector(vector)
             .with_limit(kwargs.get("top_k", 4))
@@ -201,6 +224,7 @@ class WeaviateVector(BaseVector):
         for res in result["data"]["Get"][collection_name]:
             text = res.pop(Field.TEXT_KEY.value)
             score = 1 - res["_additional"]["distance"]
+            print(res)
             docs_and_scores.append((Document(page_content=text, metadata=res), score))
 
         docs = []
@@ -231,8 +255,31 @@ class WeaviateVector(BaseVector):
         if kwargs.get("search_distance"):
             content["certainty"] = kwargs.get("search_distance")
         query_obj = self._client.query.get(collection_name, properties)
-        if kwargs.get("where_filter"):
-            query_obj = query_obj.with_where(kwargs.get("where_filter"))
+
+        query_info = parse_extraction_query(query)
+        doc_name_filter = (
+            {
+                "operator": "Like",
+                "path": ["document_name"],
+                "valueText": f"*{query_info['filename']}*",
+            }
+            if query_info["filename"]
+            else None
+        )
+        
+        # 合并过滤条件
+        where_filter = kwargs.get("where_filter")
+        if where_filter and doc_name_filter:
+            where_filter = {
+                "operator": "And",
+                "operands": [where_filter, doc_name_filter],
+            }
+        elif doc_name_filter:
+            where_filter = doc_name_filter
+            
+        # 应用过滤条件
+        if where_filter:
+            query_obj = query_obj.with_where(where_filter)
         query_obj = query_obj.with_additional(["vector"])
         properties = ["text"]
         result = query_obj.with_bm25(query=query, properties=properties).with_limit(kwargs.get("top_k", 2)).do()
@@ -242,6 +289,7 @@ class WeaviateVector(BaseVector):
         for res in result["data"]["Get"][collection_name]:
             text = res.pop(Field.TEXT_KEY.value)
             additional = res.pop("_additional")
+            print(res)
             docs.append(Document(page_content=text, vector=additional["vector"], metadata=res))
         return docs
 

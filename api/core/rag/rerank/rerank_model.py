@@ -50,6 +50,7 @@ class RerankModelRunner:
                     "doc_id": documents[result.index].metadata["doc_id"],
                     "doc_hash": documents[result.index].metadata["doc_hash"],
                     "document_id": documents[result.index].metadata["document_id"],
+                    "document_name": documents[result.index].metadata["document_name"],
                     "dataset_id": documents[result.index].metadata["dataset_id"],
                     "score": result.score,
                 },
