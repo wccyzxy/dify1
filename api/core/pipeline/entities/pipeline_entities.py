@@ -25,10 +25,11 @@ class PipelineQuery:
         }
 
 class PipelineQueryConfig:
-    def __init__(self, configs: List[Dict[str, Any]]):
+    def __init__(self, configs: Dict[str, Any], tenant_id: str):
         self.configs = configs
         self.current_index = 0
-
+        self.tenant_id = tenant_id
+        
     def to_dict(self) -> Dict[str, Any]:
         return {
             'current_index': self.current_index,

@@ -240,6 +240,12 @@ const AppInfo = ({ expand }: IAppInfoProps) => {
                       <div title={t('app.newApp.advanced') || ''} className='px-1 border bg-white border-[rgba(0,0,0,0.08)] rounded-[5px] truncate'>{t('app.newApp.advanced').toUpperCase()}</div>
                     </>
                   )}
+                  {appDetail.mode === 'pipeline-chat' && (
+                    <>
+                      <div className='shrink-0 px-1 border bg-white border-[rgba(0,0,0,0.08)] rounded-[5px] truncate'>{t('app.types.chatbot').toUpperCase()}</div>
+                      <div title={t('app.newApp.pipeline') || ''} className='px-1 border bg-white border-[rgba(0,0,0,0.08)] rounded-[5px] truncate'>{t('app.newApp.pipeline').toUpperCase()}</div>
+                    </>
+                  )}
                   {appDetail.mode === 'agent-chat' && (
                     <div className='shrink-0 px-1 border bg-white border-[rgba(0,0,0,0.08)] rounded-[5px] truncate'>{t('app.types.agent').toUpperCase()}</div>
                   )}

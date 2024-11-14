@@ -9,9 +9,9 @@ class BasePipeline(ABC):
     def __init__(self, config: Dict[str, Any]):
         self.pipeline_name = ''
         self.config = config
-        self.tenant_id = '9f2194a7-2f2f-49ae-8c2d-eb7febe9555c'
 
     def run(self, context: PipelineExecutionContext) -> PipelineExecutionContext:
+        print(f'{self.pipeline_name} run')
         pipeline_execution_log = PipelineExecutionLog()
         pipeline_execution_log.pipeline_query = context.query
         pipeline_execution_log.pipeline_query_config = context.query_config

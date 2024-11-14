@@ -37,7 +37,7 @@ class SimpleToolPipeline(BasePipeline):
         # 获取 tool 运行时
         try:
             tool_runtime = ToolManager.get_workflow_tool_runtime(
-                tenant_id=self.tenant_id,
+                tenant_id=self.config['tenant_id'],
                 app_id='',
                 node_id='',
                 workflow_tool=node_data,

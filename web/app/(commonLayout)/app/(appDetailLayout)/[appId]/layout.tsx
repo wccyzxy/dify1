@@ -117,6 +117,9 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
       if ((res.mode === 'workflow' || res.mode === 'advanced-chat') && (pathname).endsWith('configuration')) {
         router.replace(`/app/${appId}/workflow`)
       }
+      // else if ((res.mode === 'pipeline-chat') && (pathname).endsWith('configuration')) {
+      //   router.replace(`/app/${appId}/pipeline`)
+      // }
       else if ((res.mode !== 'workflow' && res.mode !== 'advanced-chat') && (pathname).endsWith('workflow')) {
         router.replace(`/app/${appId}/configuration`)
       }

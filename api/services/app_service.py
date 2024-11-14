@@ -145,6 +145,13 @@ class AppService:
 
         db.session.commit()
 
+        # 创建pipeline_query_config
+        if app.mode == AppMode.PIPELINE_CHAT.value:
+            pipeline_query_config_path = f"pipeline_query_configs/{app.id}.json"
+            pipeline_query_config_path.mkdir(parents=True, exist_ok=True)
+            with open(pipeline_query_config_path, "w") as f:
+                json.dump({}, f)
+
         app_was_created.send(app, account=account)
 
         return app

@@ -259,6 +259,43 @@ const CreateAppModal = ({ show, onSuccess, onClose }: CreateAppDialogProps) => {
               </div>
               <div className='mt-[2px] text-gray-500 text-xs leading-[18px]'>{t('app.newApp.advancedFor')}</div>
             </div>
+            <div 
+              className={cn(
+                'relative grow flex-[50%] pl-4 py-[10px] pr-[10px] rounded-lg border border-gray-100 bg-gray-25 text-gray-700 cursor-pointer hover:bg-white hover:shadow-xs hover:border-gray-300',
+                appMode === 'pipeline-chat' && 'bg-white shadow-xs border-[1.5px] border-primary-400 hover:border-[1.5px] hover:border-primary-400',
+              )}
+              onClick={() => {
+                setAppMode('pipeline-chat')
+              }}
+            >
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center'>
+                  <div className='h-5 text-sm font-medium leading-5'>{t('app.newApp.pipeline')}</div>
+                  <span className='px-1 rounded-[5px] bg-white border border-black/8 text-gray-500 text-[10px] leading-[18px] font-medium'>BETA</span>
+                </div>
+                <div className='group'>
+                  <RiQuestionLine className='w-[14px] h-[14px] text-gray-400 hover:text-gray-500' />
+                  <div
+                    className={cn(
+                      'hidden z-20 absolute right-[26px] top-[-158px] w-[376px] rounded-xl bg-white border-[0.5px] border-[rgba(0,0,0,0.05)] shadow-lg group-hover:block',
+                    )}
+                  >
+                    <div className={cn('w-full h-[256px] bg-center bg-no-repeat bg-contain rounded-xl', s.advancedPic)} />
+                    <div className='px-4 pb-2'>
+                      <div className='flex items-center justify-between'>
+                        <div className='flex items-center'>
+                          <div className='mr-1 text-gray-700 text-md leading-6 font-semibold'>{t('app.newApp.pipeline')}</div>
+                          <span className='px-1 rounded-[5px] bg-white border border-black/8 text-gray-500 text-[10px] leading-[18px] font-medium'>BETA</span>
+                        </div>
+                        <div className='text-orange-500 text-xs leading-[18px] font-medium'>{t('app.newApp.pipelineFor').toLocaleUpperCase()}</div>
+                      </div>
+                      <div className='mt-1 text-gray-500 text-sm leading-5'>{t('app.newApp.pipelineDescription')}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='mt-[2px] text-gray-500 text-xs leading-[18px]'>{t('app.newApp.pipelineFor')}</div>
+            </div>
           </div>
         </div>
       )}

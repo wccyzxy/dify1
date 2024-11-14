@@ -21,8 +21,10 @@ class PipelineExecutionEntry:
         context = self.pre_deal_pipeline.run(context)
         
         # 根据 CodeQueryConfig 执行中间流程
+        print(f'query_config: {query_config.configs}')
         for pipeline_config in query_config.configs.get('pipelines', []):
             pipeline_class = self._import_pipeline(pipeline_config)
+            pipeline_config['tenant_id'] = query_config.tenant_id
             pipeline_instance = pipeline_class(pipeline_config)
             context = pipeline_instance.run(context)
         
@@ -35,8 +37,8 @@ class PipelineExecutionEntry:
 
     def _import_pipeline(self, pipeline_config: Dict[str, Any]):
         pipeline_name = pipeline_config['name']
-        pipeline_category = pipeline_config['category']
-        module_name = f"{self.pipelines_dir}.{pipeline_category}.{pipeline_name}" if pipeline_category else f"{self.pipelines_dir}.{pipeline_name}"
+        pipeline_path = pipeline_config['path']
+        module_name = f"{self.pipelines_dir}.{pipeline_path}"
         try:
             module = importlib.import_module(module_name)
             return getattr(module, pipeline_name)

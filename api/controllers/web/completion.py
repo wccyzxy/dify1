@@ -40,6 +40,7 @@ class CompletionApi(WebApiResource):
         parser.add_argument("files", type=list, required=False, location="json")
         parser.add_argument("response_mode", type=str, choices=["blocking", "streaming"], location="json")
         parser.add_argument("retriever_from", type=str, required=False, default="web_app", location="json")
+        parser.add_argument("pipeline_query_config", type=dict, required=False, location="json")
 
         args = parser.parse_args()
 
@@ -87,7 +88,7 @@ class CompletionStopApi(WebApiResource):
 class ChatApi(WebApiResource):
     def post(self, app_model, end_user):
         app_mode = AppMode.value_of(app_model.mode)
-        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT}:
+        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT, AppMode.PIPELINE_CHAT}:
             raise NotChatAppError()
 
         parser = reqparse.RequestParser()
@@ -98,6 +99,7 @@ class ChatApi(WebApiResource):
         parser.add_argument("conversation_id", type=uuid_value, location="json")
         parser.add_argument("parent_message_id", type=uuid_value, required=False, location="json")
         parser.add_argument("retriever_from", type=str, required=False, default="web_app", location="json")
+        parser.add_argument("pipeline_query_config", type=dict, required=False, location="json")
 
         args = parser.parse_args()
 
@@ -137,7 +139,7 @@ class ChatApi(WebApiResource):
 class ChatStopApi(WebApiResource):
     def post(self, app_model, end_user, task_id):
         app_mode = AppMode.value_of(app_model.mode)
-        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT}:
+        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT, AppMode.PIPELINE_CHAT}:
             raise NotChatAppError()
 
         AppQueueManager.set_stop_flag(task_id, InvokeFrom.WEB_APP, end_user.id)

@@ -6,6 +6,7 @@ import uuid
 from collections.abc import Generator
 from typing import Any, Literal, Optional, Union, overload
 
+from core.app.apps.pipeline_chat.generate_task_pipeline import PipelineChatAppGenerateTaskPipeline
 from flask import Flask, current_app
 from pydantic import ValidationError
 
@@ -14,7 +15,6 @@ from core.app.app_config.features.file_upload.manager import FileUploadConfigMan
 from core.app.apps.pipeline_chat.app_config_manager import PipelineChatAppConfigManager
 from core.app.apps.pipeline_chat.app_runner import PipelineChatAppRunner
 from core.app.apps.pipeline_chat.generate_response_converter import PipelineChatAppGenerateResponseConverter
-from core.app.apps.pipeline_chat.generate_task_pipeline import PipelineChatAppGenerateTaskPipeline
 from core.app.apps.base_app_queue_manager import AppQueueManager, GenerateTaskStoppedError, PublishFrom
 from core.app.apps.message_based_app_generator import MessageBasedAppGenerator
 from core.app.apps.message_based_app_queue_manager import MessageBasedAppQueueManager
@@ -26,7 +26,6 @@ from core.ops.ops_trace_manager import TraceQueueManager
 from extensions.ext_database import db
 from models.account import Account
 from models.model import App, Conversation, EndUser, Message
-from models.workflow import Workflow
 
 logger = logging.getLogger(__name__)
 
@@ -159,18 +158,8 @@ class PipelineChatAppGenerator(MessageBasedAppGenerator):
         :param conversation: conversation
         :param stream: is stream
         """
-        is_first_conversation = False
-        if not conversation:
-            is_first_conversation = True
-
         # init generate records
         (conversation, message) = self._init_generate_records(application_generate_entity, conversation)
-
-        if is_first_conversation:
-            # update conversation features
-            conversation.override_model_configs = PipelineChatAppGenerateEntity.app_config.app_model_config_dict
-            db.session.commit()
-            db.session.refresh(conversation)
 
         # init queue manager
         queue_manager = MessageBasedAppQueueManager(
@@ -198,7 +187,7 @@ class PipelineChatAppGenerator(MessageBasedAppGenerator):
         worker_thread.start()
 
         # return response or stream generator
-        response = self._handle_advanced_chat_response(
+        response = self._handle_pipeline_chat_response(
             application_generate_entity=application_generate_entity,
             queue_manager=queue_manager,
             conversation=conversation,

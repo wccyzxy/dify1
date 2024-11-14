@@ -76,6 +76,11 @@ class PipelineChatAppConfigManager(BaseAppConfigManager):
         )
         related_config_keys.extend(current_related_config_keys)
 
+        # pipeline_query_config
+        if not config.get("pipeline_query_config"):
+            config["pipeline_query_config"] = {"pipelines": []}
+        related_config_keys.append("pipeline_query_config")
+
         related_config_keys = list(set(related_config_keys))
 
         # Filter out extra parameters

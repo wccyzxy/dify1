@@ -243,6 +243,7 @@ class AppModelConfig(db.Model):
     dataset_configs = db.Column(db.Text)
     external_data_tools = db.Column(db.Text)
     file_upload = db.Column(db.Text)
+    pipeline_query_config = db.Column(db.Text)
 
     @property
     def app(self):
@@ -360,6 +361,12 @@ class AppModelConfig(db.Model):
             }
         )
 
+    @property
+    def pipeline_query_config_dict(self) -> dict:
+        return json.loads(self.pipeline_query_config) if self.pipeline_query_config else {
+            "pipelines": []
+        }
+
     def to_dict(self) -> dict:
         return {
             "opening_statement": self.opening_statement,
@@ -382,6 +389,7 @@ class AppModelConfig(db.Model):
             "completion_prompt_config": self.completion_prompt_config_dict,
             "dataset_configs": self.dataset_configs_dict,
             "file_upload": self.file_upload_dict,
+            "pipeline_query_config": self.pipeline_query_config_dict,
         }
 
     def from_model_config_dict(self, model_config: dict):
@@ -428,6 +436,9 @@ class AppModelConfig(db.Model):
             json.dumps(model_config.get("dataset_configs")) if model_config.get("dataset_configs") else None
         )
         self.file_upload = json.dumps(model_config.get("file_upload")) if model_config.get("file_upload") else None
+        self.pipeline_query_config = (
+            json.dumps(model_config.get("pipeline_query_config")) if model_config.get("pipeline_query_config") else None
+        )
         return self
 
     def copy(self):
@@ -453,6 +464,7 @@ class AppModelConfig(db.Model):
             completion_prompt_config=self.completion_prompt_config,
             dataset_configs=self.dataset_configs,
             file_upload=self.file_upload,
+            pipeline_query_config=self.pipeline_query_config,
         )
 
         return new_app_model_config

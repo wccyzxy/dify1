@@ -101,7 +101,7 @@ class ChatMessageApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    @get_app_model(mode=[AppMode.CHAT, AppMode.AGENT_CHAT])
+    @get_app_model(mode=[AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.PIPELINE_CHAT])
     def post(self, app_model):
         parser = reqparse.RequestParser()
         parser.add_argument("inputs", type=dict, required=True, location="json")
@@ -143,6 +143,8 @@ class ChatMessageApi(Resource):
         except InvokeError as e:
             raise CompletionRequestError(e.description)
         except (ValueError, AppInvokeQuotaExceededError) as e:
+            import traceback
+            traceback.print_exc()
             raise e
         except Exception as e:
             logging.exception("internal server error.")
@@ -153,7 +155,7 @@ class ChatMessageStopApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    @get_app_model(mode=[AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT])
+    @get_app_model(mode=[AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT, AppMode.PIPELINE_CHAT])
     def post(self, app_model, task_id):
         account = flask_login.current_user
 

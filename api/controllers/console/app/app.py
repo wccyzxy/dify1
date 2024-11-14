@@ -18,7 +18,7 @@ from libs.login import login_required
 from services.app_dsl_service import AppDslService
 from services.app_service import AppService
 
-ALLOW_CREATE_APP_MODES = ["chat", "agent-chat", "advanced-chat", "workflow", "completion"]
+ALLOW_CREATE_APP_MODES = ["chat", "agent-chat", "advanced-chat", "workflow", "completion", "pipeline-chat"]
 
 
 class AppListApi(Resource):

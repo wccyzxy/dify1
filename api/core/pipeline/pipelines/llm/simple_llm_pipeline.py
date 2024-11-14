@@ -102,7 +102,7 @@ class SimpleLLMPipeline(BasePipeline):
 
         model_manager = ModelManager()
         model_instance = model_manager.get_model_instance(
-            tenant_id=self.tenant_id, model_type=ModelType.LLM, provider=provider_name, model=model_name
+            tenant_id=self.config['tenant_id'], model_type=ModelType.LLM, provider=provider_name, model=model_name
         )
 
         provider_model_bundle = model_instance.provider_model_bundle
@@ -165,7 +165,7 @@ class SimpleLLMPipeline(BasePipeline):
             model_parameters=model_config.parameters,
             stop=model_config.stop,
             stream=False,
-            user=self.tenant_id,
+            user=self.config['tenant_id'],
         )
 
         if isinstance(invoke_result, Generator):

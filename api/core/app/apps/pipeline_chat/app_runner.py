@@ -1,11 +1,12 @@
+import json
 import logging
 import os
 from collections.abc import Mapping
 from typing import Any, cast
 
-from api.core.app.apps.base_app_runner import AppRunner
-from api.core.pipeline.entities.event import PipelineEngineEvent, PipelineRunFailedEvent, PipelineRunSucceededEvent
-from api.core.pipeline.entities.pipeline_entities import PipelineQuery, PipelineQueryConfig
+from core.app.apps.base_app_runner import AppRunner
+from core.pipeline.entities.event import PipelineEngineEvent, PipelineRunFailedEvent, PipelineRunSucceededEvent
+from core.pipeline.entities.pipeline_entities import PipelineQuery, PipelineQueryConfig
 
 from core.app.apps.pipeline_chat.app_config_manager import PipelineChatAppConfig
 from core.app.apps.base_app_queue_manager import AppQueueManager, PublishFrom
@@ -98,26 +99,32 @@ class PipelineChatAppRunner(AppRunner):
 
         db.session.commit()
 
-        db.session.close()
-
         pipeline_query = PipelineQuery(
             query=query,
             user_id=user_id,
             conversation_id=self.conversation.id,
-            parent_message_id=self.message.id,
         )
+
+        configs = {}
+        with open(f'pipeline_query_configs/{app_record.id}.json', 'r') as f:
+            configs = json.load(f)
+
         pipeline_query_config = PipelineQueryConfig(
-            configs=self.application_generate_entity.extras['pipeline_query_config'],
+            configs=configs,
+            tenant_id=app_record.tenant_id,
         )
         # RUN PIPELINE
         pipeline_entry = PipelineExecutionEntry()
 
-        generator = pipeline_entry.execute(
-            pipeline_query=pipeline_query,
-            pipeline_query_config=pipeline_query_config,
-        )
-        for event in generator:
-            self._handle_event(pipeline_entry, event)
+        try:
+            pipeline_answer = pipeline_entry.execute(
+                query=pipeline_query,
+                query_config=pipeline_query_config,
+            )
+            print(f'pipeline_answer: {pipeline_answer}')
+            self._handle_event(pipeline_entry, PipelineRunSucceededEvent(outputs=pipeline_answer))
+        except Exception as e:
+            self._handle_event(pipeline_entry, PipelineRunFailedEvent(error=f'{e}'))
 
     def handle_input_moderation(
         self,

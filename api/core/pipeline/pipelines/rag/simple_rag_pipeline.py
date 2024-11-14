@@ -82,7 +82,7 @@ class SimpleRAGPipeline(BasePipeline):
                 weights = None
             all_documents = dataset_retrieval.multiple_retrieve(
                 '',
-                self.tenant_id,
+                self.config['tenant_id'],
                 '',
                 '',
                 available_datasets,

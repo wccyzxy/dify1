@@ -139,6 +139,10 @@ export type DatasetConfigItem = {
   value: number
 }
 
+export type PipelineQueryConfig = {
+  pipelines: any[]
+}
+
 export type DatasetConfigs = {
   retrieval_model: RETRIEVE_TYPE
   reranking_model: {

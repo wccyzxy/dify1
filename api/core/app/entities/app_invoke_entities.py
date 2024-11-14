@@ -4,7 +4,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from core.app.app_config.entities import AppConfig, EasyUIBasedAppConfig, WorkflowUIBasedAppConfig
+from core.app.app_config.entities import AppConfig, EasyUIBasedAppConfig, PipelineChatAppConfig, WorkflowUIBasedAppConfig
 from core.entities.provider_configuration import ProviderModelBundle
 from core.file.file_obj import FileVar
 from core.model_runtime.entities.model_entities import AIModelEntity
@@ -169,7 +169,8 @@ class PipelineChatAppGenerateEntity(AppGenerateEntity):
     """
     Pipeline Chat Application Generate Entity.
     """
-
+    app_config: PipelineChatAppConfig
+    
     conversation_id: Optional[str] = None
     parent_message_id: Optional[str] = None
     query: str

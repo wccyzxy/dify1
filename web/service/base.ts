@@ -163,6 +163,7 @@ const handleStream = (
   function read() {
     let hasError = false
     reader?.read().then((result: any) => {
+      console.log('result:', result)
       if (result.done) {
         onCompleted && onCompleted()
         return
@@ -534,6 +535,7 @@ export const ssePost = (
 
   globalThis.fetch(urlWithPrefix, options as RequestInit)
     .then((res) => {
+      console.log('res:', res)
       if (!/^(2|3)\d{2}$/.test(String(res.status))) {
         res.json().then((data: any) => {
           Toast.notify({ type: 'error', message: data.message || 'Server Error' })

@@ -9,6 +9,7 @@ from core.app.apps.agent_chat.app_generator import AgentChatAppGenerator
 from core.app.apps.chat.app_generator import ChatAppGenerator
 from core.app.apps.completion.app_generator import CompletionAppGenerator
 from core.app.apps.workflow.app_generator import WorkflowAppGenerator
+from core.app.apps.pipeline_chat.app_generator import PipelineChatAppGenerator
 from core.app.entities.app_invoke_entities import InvokeFrom
 from core.app.features.rate_limiting import RateLimit
 from models.model import Account, App, AppMode, EndUser
@@ -72,6 +73,13 @@ class AppGenerateService:
                         args=args,
                         invoke_from=invoke_from,
                         stream=streaming,
+                    ),
+                    request_id,
+                )
+            elif app_model.mode == AppMode.PIPELINE_CHAT.value:
+                return rate_limit.generate(
+                    PipelineChatAppGenerator().generate(
+                        app_model=app_model, user=user, args=args, invoke_from=invoke_from, stream=streaming
                     ),
                     request_id,
                 )

@@ -285,6 +285,7 @@ export const useChat = (
       {
         isPublicAPI,
         onData: (message: string, isFirstMessage: boolean, { conversationId: newConversationId, messageId, taskId }: any) => {
+          console.log('message:', message)
           if (!isAgentMode) {
             responseItem.content = responseItem.content + message
           }
@@ -314,6 +315,7 @@ export const useChat = (
           })
         },
         async onCompleted(hasError?: boolean) {
+          console.log('onCompleted:', hasError)
           handleResponding(false)
 
           if (hasError)
@@ -422,6 +424,7 @@ export const useChat = (
           })
         },
         onMessageEnd: (messageEnd) => {
+          console.log('messageEnd:', messageEnd)
           if (messageEnd.metadata?.annotation_reply) {
             responseItem.id = messageEnd.id
             responseItem.annotation = ({

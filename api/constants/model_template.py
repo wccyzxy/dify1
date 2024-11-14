@@ -64,6 +64,22 @@ default_app_templates = {
             "enable_api": True,
         },
     },
+    # pipeline-chat default mode
+    AppMode.PIPELINE_CHAT: {
+        "app": {
+            "mode": AppMode.PIPELINE_CHAT.value,
+            "enable_site": True,
+            "enable_api": True,
+        },
+        "model_config": {
+            "model": {
+                "provider": "openai",
+                "name": "gpt-4o",
+                "mode": "chat",
+                "completion_params": {},
+            },
+        },
+    },
     # agent-chat default mode
     AppMode.AGENT_CHAT: {
         "app": {

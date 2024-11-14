@@ -7,6 +7,7 @@ from core.app.entities.queue_entities import (
     QueueErrorEvent,
     QueueMessage,
     QueueMessageEndEvent,
+    QueuePipelineChatMessageEndEvent,
     QueueStopEvent,
 )
 
@@ -48,7 +49,7 @@ class MessageBasedAppQueueManager(AppQueueManager):
         self._q.put(message)
 
         if isinstance(
-            event, QueueStopEvent | QueueErrorEvent | QueueMessageEndEvent | QueueAdvancedChatMessageEndEvent
+            event, QueueStopEvent | QueueErrorEvent | QueueMessageEndEvent | QueueAdvancedChatMessageEndEvent | QueuePipelineChatMessageEndEvent
         ):
             self.stop_listen()
 

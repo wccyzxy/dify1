@@ -21,6 +21,7 @@ class QueueEvent(str, Enum):
     MESSAGE_REPLACE = "message_replace"
     MESSAGE_END = "message_end"
     ADVANCED_CHAT_MESSAGE_END = "advanced_chat_message_end"
+    PIPELINE_CHAT_MESSAGE_END = "pipeline_chat_message_end"
     WORKFLOW_STARTED = "workflow_started"
     WORKFLOW_SUCCEEDED = "workflow_succeeded"
     WORKFLOW_FAILED = "workflow_failed"
@@ -224,6 +225,14 @@ class QueueAdvancedChatMessageEndEvent(AppQueueEvent):
     event: QueueEvent = QueueEvent.ADVANCED_CHAT_MESSAGE_END
 
 
+class QueuePipelineChatMessageEndEvent(AppQueueEvent):
+    """
+    QueuePipelineChatMessageEndEvent entity
+    """
+
+    event: QueueEvent = QueueEvent.PIPELINE_CHAT_MESSAGE_END
+
+
 class QueueWorkflowStartedEvent(AppQueueEvent):
     """
     QueueWorkflowStartedEvent entity
@@ -264,7 +273,6 @@ class QueuePipelineSucceededEvent(AppQueueEvent):
 
     event: QueueEvent = QueueEvent.PIPELINE_SUCCEEDED
     outputs: Optional[dict[str, Any]] = None
-
 
 class QueuePipelineFailedEvent(AppQueueEvent):
     """

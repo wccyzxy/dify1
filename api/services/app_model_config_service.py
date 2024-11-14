@@ -1,6 +1,7 @@
 from core.app.apps.agent_chat.app_config_manager import AgentChatAppConfigManager
 from core.app.apps.chat.app_config_manager import ChatAppConfigManager
 from core.app.apps.completion.app_config_manager import CompletionAppConfigManager
+from core.app.apps.pipeline_chat.app_config_manager import PipelineChatAppConfigManager
 from models.model import AppMode
 
 
@@ -13,5 +14,7 @@ class AppModelConfigService:
             return AgentChatAppConfigManager.config_validate(tenant_id, config)
         elif app_mode == AppMode.COMPLETION:
             return CompletionAppConfigManager.config_validate(tenant_id, config)
+        elif app_mode == AppMode.PIPELINE_CHAT:
+            return PipelineChatAppConfigManager.config_validate(tenant_id, config)
         else:
             raise ValueError(f"Invalid app mode: {app_mode}")
