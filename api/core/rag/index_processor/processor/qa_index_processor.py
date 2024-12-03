@@ -43,7 +43,7 @@ class QAIndexProcessor(BaseIndexProcessor):
             document.page_content = document_text
 
             # parse document to nodes
-            document_nodes = splitter.split_documents([document])
+            document_nodes = [document]
             split_documents = []
             for document_node in document_nodes:
                 if document_node.page_content.strip():
