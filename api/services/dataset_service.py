@@ -1310,7 +1310,7 @@ class DocumentService:
 class SegmentService:
     @classmethod
     def segment_create_args_validate(cls, args: dict, document: Document):
-        if document.doc_form == "qa_model":
+        if document.doc_form == "qa_model" or document.doc_form == "qa_index":
             if "answer" not in args or not args["answer"]:
                 raise ValueError("Answer is required")
             if not args["answer"].strip():
@@ -1356,7 +1356,7 @@ class SegmentService:
                 completed_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
                 created_by=current_user.id,
             )
-            if document.doc_form == "qa_model":
+            if document.doc_form == "qa_model" or document.doc_form == "qa_index":
                 segment_document.answer = args["answer"]
 
             db.session.add(segment_document)
@@ -1419,7 +1419,7 @@ class SegmentService:
                     completed_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
                     created_by=current_user.id,
                 )
-                if document.doc_form == "qa_model":
+                if document.doc_form == "qa_model" or document.doc_form == "qa_index":
                     segment_document.answer = segment_item["answer"]
                 db.session.add(segment_document)
                 segment_data_list.append(segment_document)
@@ -1471,7 +1471,7 @@ class SegmentService:
         try:
             content = args["content"]
             if segment.content == content:
-                if document.doc_form == "qa_model":
+                if document.doc_form == "qa_model" or document.doc_form == "qa_index":
                     segment.answer = args["answer"]
                 if args.get("keywords"):
                     segment.keywords = args["keywords"]
@@ -1520,7 +1520,7 @@ class SegmentService:
                 segment.enabled = True
                 segment.disabled_at = None
                 segment.disabled_by = None
-                if document.doc_form == "qa_model":
+                if document.doc_form == "qa_model" or document.doc_form == "qa_index":
                     segment.answer = args["answer"]
                 db.session.add(segment)
                 db.session.commit()
