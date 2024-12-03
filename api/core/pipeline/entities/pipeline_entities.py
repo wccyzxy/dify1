@@ -37,16 +37,18 @@ class PipelineQueryConfig:
         }
 
 class PipelineAnswer:
-    def __init__(self, answer: str, references: List[Dict[str, any]]):
+    def __init__(self, answer: str, references: List[Dict[str, any]], recommend_questions: List[str]):
         self.id: str = str(uuid.uuid4())
         self.answer: str = answer
         self.references: List[Dict[str, any]] = references
+        self.recommend_questions: List[str] = recommend_questions
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             'id': self.id,
             'answer': self.answer,
-            'references': self.references
+            'references': self.references,
+            'recommend_questions': self.recommend_questions
         }
     
 class PipelineExecutionLog:
@@ -96,6 +98,17 @@ class BasePipelineData(ABC):
                 return self.data['text']
             if isinstance(self.data, dict) and self.data.get('json', None):
                 return json.dumps(self.data['json'])
+        if self.data_from == "DealLeadingQuestion":
+            if self.data.get("code", 200) == 200:
+                return self.data.get("data", "")
+            elif self.data.get("code", 200) == 500:
+                return self.data.get("message", "")
+        if self.data_from == "DealQueryQA":
+            if self.data.get("code", 200) == 200:
+                return self.data.get("answer", "")
+        if self.data_from == "FuncDeveloping":
+            if self.data.get("code", 200) == 200:
+                return self.data.get("data", "")
         return ''
 
 class PipelineExecutionContext:
@@ -103,4 +116,5 @@ class PipelineExecutionContext:
     query_config: PipelineQueryConfig = None
     pipeline_datas: List[BasePipelineData] = []
     logs: List[PipelineExecutionLog] = []
+    is_exit: bool = False
 

@@ -270,3 +270,33 @@ class RateLimiter:
 
         redis_client.zadd(key, {current_time: current_time})
         redis_client.expire(key, self.time_window * 2)
+
+def determine_language(text):
+    """
+    判断给定文本是中文还是英文
+    
+    :param text: 要判断的文本
+    :return: 'chinese' 如果是中文，'english' 如果是英文，'mixed' 如果是混合的
+    """
+    chinese_chars = 0
+    english_chars = 0
+    
+    for char in text:
+        if '\u4e00' <= char <= '\u9fff':
+            chinese_chars += 1
+        elif char.isascii() and char.isalpha():
+            english_chars += 1
+    
+    total_chars = chinese_chars + english_chars
+    if total_chars == 0:
+        return 'unknown'
+    
+    chinese_ratio = chinese_chars / total_chars
+    english_ratio = english_chars / total_chars
+    
+    if chinese_ratio > 0.6:
+        return 'chinese'
+    elif english_ratio > 0.6:
+        return 'english'
+    else:
+        return 'mixed'

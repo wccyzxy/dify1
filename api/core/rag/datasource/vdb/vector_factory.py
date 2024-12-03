@@ -6,6 +6,7 @@ from core.embedding.cached_embedding import CacheEmbedding
 from core.model_manager import ModelManager
 from core.model_runtime.entities.model_entities import ModelType
 from core.rag.datasource.entity.embedding import Embeddings
+from core.rag.datasource.utils.common import parse_extraction_query
 from core.rag.datasource.vdb.vector_base import BaseVector
 from core.rag.datasource.vdb.vector_type import VectorType
 from core.rag.models.document import Document
@@ -128,7 +129,8 @@ class Vector:
         self._vector_processor.delete_by_metadata_field(key, value)
 
     def search_by_vector(self, query: str, **kwargs: Any) -> list[Document]:
-        query_vector = self._embeddings.embed_query(query)
+        query_info = parse_extraction_query(query)
+        query_vector = self._embeddings.embed_query(query if not query_info["query"] else query_info["query"])
         kwargs["query"] = query
         return self._vector_processor.search_by_vector(query_vector, **kwargs)
 

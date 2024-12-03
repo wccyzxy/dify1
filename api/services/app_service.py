@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from typing import cast
 
@@ -148,7 +149,7 @@ class AppService:
         # 创建pipeline_query_config
         if app.mode == AppMode.PIPELINE_CHAT.value:
             pipeline_query_config_path = f"pipeline_query_configs/{app.id}.json"
-            pipeline_query_config_path.mkdir(parents=True, exist_ok=True)
+            os.makedirs(pipeline_query_config_path, exist_ok=True)
             with open(pipeline_query_config_path, "w") as f:
                 json.dump({}, f)
 

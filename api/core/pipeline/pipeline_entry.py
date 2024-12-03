@@ -23,10 +23,9 @@ class PipelineExecutionEntry:
         # 根据 CodeQueryConfig 执行中间流程
         print(f'query_config: {query_config.configs}')
         for pipeline_config in query_config.configs.get('pipelines', []):
-            pipeline_class = self._import_pipeline(pipeline_config)
-            pipeline_config['tenant_id'] = query_config.tenant_id
-            pipeline_instance = pipeline_class(pipeline_config)
-            context = pipeline_instance.run(context)
+            context = self.excute_pipeline(query_config, pipeline_config, context)
+            if context.is_exit:
+                break
         
         # 执行 AfterDealPipeline
         context = self.after_deal_pipeline.run(context)
@@ -34,6 +33,22 @@ class PipelineExecutionEntry:
         # 生成 CodeAnswer
         code_answer = self._generate_answer(context)
         return code_answer.to_dict()
+
+    def excute_pipeline(self, query_config, pipeline_config, context: PipelineExecutionContext):
+        pipeline_class = self._import_pipeline(pipeline_config)
+        pipeline_config['tenant_id'] = query_config.tenant_id
+        pipeline_instance = pipeline_class(pipeline_config)
+        context = pipeline_instance.run(context)
+        last_pipeline_data = context.pipeline_datas[-1].data
+        if "code" in last_pipeline_data and last_pipeline_data["code"] == 300:
+            key = last_pipeline_data.get("key", "")
+            sub_pipeline_configs = pipeline_config.get("sub_pipeline_configs", {})
+            if key != "" and key in sub_pipeline_configs:
+                for config in sub_pipeline_configs.get(key, []):
+                    context = self.excute_pipeline(query_config, config, context)
+                    if context.is_exit:
+                        break
+        return context
 
     def _import_pipeline(self, pipeline_config: Dict[str, Any]):
         pipeline_name = pipeline_config['name']
@@ -48,7 +63,11 @@ class PipelineExecutionEntry:
     def _generate_answer(self, context: PipelineExecutionContext) -> PipelineAnswer:
         answer = context.pipeline_datas[-1].fetch_context() if len(context.pipeline_datas) > 0 else ""
         references = []
+        recommend_questions = []
         for pipeline_data in context.pipeline_datas:
             if pipeline_data.data_from == "RAG":
                 references.append({"RAG": pipeline_data.data})
-        return PipelineAnswer(answer=answer, references=references)
+            elif pipeline_data.data_from == "DealQueryQA":
+                references.append({"QA_DATASET": pipeline_data.data.get("references", [])})
+                recommend_questions = pipeline_data.data.get("recommend_questions", [])
+        return PipelineAnswer(answer=answer, references=references, recommend_questions=recommend_questions)

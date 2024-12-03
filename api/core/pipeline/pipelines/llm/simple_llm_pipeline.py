@@ -1,3 +1,4 @@
+import json
 from core.pipeline.base_pipeline import BasePipeline
 from core.pipeline.entities.pipeline_entities import PipelineExecutionContext, BasePipelineData
 from typing import List, Dict, Any
@@ -19,6 +20,8 @@ from core.model_runtime.entities.message_entities import (
     SystemPromptMessage,
     UserPromptMessage,
 )
+from extensions.ext_database import db
+from models.model import Conversation
 from collections.abc import Generator
 
 class ModelConfigWithCredentialsEntity(BaseModel):
@@ -64,14 +67,16 @@ class SimpleLLMPipeline(BasePipeline):
 
     def process(self, context: PipelineExecutionContext) -> PipelineExecutionContext:
         query = context.query.query
+        conversation_id = context.query.conversation_id
         # 获取上下文（如果存在）
         context_content = context.pipeline_datas[-1].fetch_context() if len(context.pipeline_datas) > 0 else ""
         
         # fetch model config
         model_instance, model_config = self._fetch_model_config(self.config['model'])
 
+        conversations = self._get_conversations(conversation_id)
         # 处理prompt模板
-        prompt_messages = self._process_prompt_template(self.config['prompt_template'], query, context_content)
+        prompt_messages = self._process_prompt_template(self.config['prompt_template'], query, context_content, conversations)
         print(f"prompt_messages: {prompt_messages}")
         llm_result = self._invoke_llm(model_instance, model_config, prompt_messages)
 
@@ -154,6 +159,23 @@ class SimpleLLMPipeline(BasePipeline):
             stop=stop,
         )
 
+    def _get_conversations(self, conversation_id):
+        conversation = (
+            db.session.query(Conversation)
+            .filter(Conversation.id == conversation_id)
+            .first()
+        )
+
+        if not conversation:
+            return []
+        messages = []
+        for message in conversation.messages:
+            messages.append({
+                "query": message.query,
+                "answer": message.answer
+            })
+        return messages[-3:] if len(messages) > 3 else messages
+
     def _invoke_llm(
         self,
         model_instance: ModelInstance,
@@ -177,7 +199,7 @@ class SimpleLLMPipeline(BasePipeline):
         else:
             return invoke_result
         
-    def _process_prompt_template(self, prompt_template, query, context_content) -> list[PromptMessage]:
+    def _process_prompt_template(self, prompt_template, query, context_content, conversations = []) -> list[PromptMessage]:
         processed_messages = []
         for message in prompt_template:
             role = message.get('role', 'user')
@@ -186,6 +208,8 @@ class SimpleLLMPipeline(BasePipeline):
             # 替换特殊变量
             text = text.replace("{{#query#}}", query)
             text = text.replace("{{#context#}}", context_content)
+            if len(conversations) > 0:
+                text = text.replace("{{#conversations#}}", json.dumps(conversations, ensure_ascii=False, indent=2))
             
             # 处理其他变量
             # for variable in re.findall(r'{{#(.*?)#}}', text):

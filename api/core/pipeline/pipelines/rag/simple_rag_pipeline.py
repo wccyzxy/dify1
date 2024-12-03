@@ -80,20 +80,25 @@ class SimpleRAGPipeline(BasePipeline):
             else:
                 reranking_model = None
                 weights = None
-            all_documents = dataset_retrieval.multiple_retrieve(
-                '',
-                self.config['tenant_id'],
-                '',
-                '',
-                available_datasets,
-                query,
-                rag_config.get("multiple_retrieval_config", {}).get("top_k", None),
-                rag_config.get("multiple_retrieval_config", {}).get("score_threshold", None),
-                rag_config.get("multiple_retrieval_config", {}).get("reranking_mode", None),
-                reranking_model,
-                weights,
-                rag_config.get("multiple_retrieval_config", {}).get("reranking_enable", None),
-            )
+            querys = query.split("\n")
+            querys = [q for q in querys if q.strip().startswith("从") and q.strip().contains("中提取")]
+            all_documents = []
+            for q in querys:
+                documents = dataset_retrieval.multiple_retrieve(
+                    '',
+                    self.config['tenant_id'],
+                    '',
+                    '',
+                    available_datasets,
+                    q,
+                    rag_config.get("multiple_retrieval_config", {}).get("top_k", None),
+                    rag_config.get("multiple_retrieval_config", {}).get("score_threshold", None),
+                    rag_config.get("multiple_retrieval_config", {}).get("reranking_mode", None),
+                    reranking_model,
+                    weights,
+                    rag_config.get("multiple_retrieval_config", {}).get("reranking_enable", None),
+                )
+                all_documents.extend(documents)
 
         context_list = []
         if all_documents:
