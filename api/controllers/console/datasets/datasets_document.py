@@ -376,9 +376,15 @@ class DocumentIndexingEstimateApi(DocumentResource):
                 # raise error if file not found
                 if not file:
                     raise NotFound("File not found.")
-
+                pre_processing_rules = data_process_rule_dict["rules"].get("pre_processing_rules")
+                docx_use_tree_index = False
+                for r in pre_processing_rules:
+                    if r["id"] == "docx_use_tree_index" and r["enabled"] is True:
+                        docx_use_tree_index = True
+                        break
                 extract_setting = ExtractSetting(
-                    datasource_type="upload_file", upload_file=file, document_model=document.doc_form
+                    datasource_type="upload_file", upload_file=file, document_model=document.doc_form,
+                    docx_use_tree_index=docx_use_tree_index
                 )
 
                 indexing_runner = IndexingRunner()
@@ -448,9 +454,15 @@ class DocumentBatchIndexingEstimateApi(DocumentResource):
 
                 if file_detail is None:
                     raise NotFound("File not found.")
-
+                pre_processing_rules = data_process_rule_dict["rules"].get("pre_processing_rules")
+                docx_use_tree_index = False
+                for r in pre_processing_rules:
+                    if r["id"] == "docx_use_tree_index" and r["enabled"] is True:
+                        docx_use_tree_index = True
+                        break
                 extract_setting = ExtractSetting(
-                    datasource_type="upload_file", upload_file=file_detail, document_model=document.doc_form
+                    datasource_type="upload_file", upload_file=file_detail, document_model=document.doc_form,
+                    docx_use_tree_index=docx_use_tree_index
                 )
                 extract_settings.append(extract_setting)
 

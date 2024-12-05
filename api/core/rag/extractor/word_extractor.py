@@ -32,11 +32,12 @@ class WordExtractor(BaseExtractor):
         file_path: Path to the file to load.
     """
 
-    def __init__(self, file_path: str, tenant_id: str, user_id: str):
+    def __init__(self, file_path: str, tenant_id: str, user_id: str, use_tree_index: bool = False):
         """Initialize with file path."""
         self.file_path = file_path
         self.tenant_id = tenant_id
         self.user_id = user_id
+        self.use_tree_index = use_tree_index
 
         if "~" in self.file_path:
             self.file_path = os.path.expanduser(self.file_path)
@@ -62,25 +63,26 @@ class WordExtractor(BaseExtractor):
 
     def extract(self) -> list[Document]:
         """Load given path as single page."""
-        # content = self.parse_docx(self.file_path, "storage")
-        # return [
-        #     Document(
-        #         page_content=content,
-        #         metadata={"source": self.file_path},
-        #     )
-        # ]
-        doc_util = DocxUtils(chunk_size=1500)
-        content_list = doc_util.extract_to_list(self.file_path)
-        documents = []
-        for content in content_list:
-            documents.append(
+        if self.use_tree_index:
+            doc_util = DocxUtils(chunk_size=1500)
+            content_list = doc_util.extract_docx_to_list(self.file_path)
+            documents = []
+            for content in content_list:
+                documents.append(
+                    Document(
+                        page_content=content,
+                        metadata={"source": self.file_path},
+                    )
+                )
+            return documents
+        else:
+            content = self.parse_docx(self.file_path, "storage")
+            return [
                 Document(
                     page_content=content,
                     metadata={"source": self.file_path},
                 )
-            )
-        return documents
-        
+            ]
 
     @staticmethod
     def _is_valid_url(url: str) -> bool:

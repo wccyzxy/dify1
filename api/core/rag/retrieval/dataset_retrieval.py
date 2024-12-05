@@ -576,17 +576,17 @@ class DatasetRetrieval:
             documents_tfidf.append(document_tfidf)
 
         def cosine_similarity(vec1, vec2):
-            intersection = set(vec1.keys()) & set(vec2.keys())
-            numerator = sum(vec1[x] * vec2[x] for x in intersection)
-
-            sum1 = sum(vec1[x] ** 2 for x in vec1)
-            sum2 = sum(vec2[x] ** 2 for x in vec2)
-            denominator = math.sqrt(sum1) * math.sqrt(sum2)
-
-            if not denominator:
-                return 0.0
-            else:
-                return float(numerator) / denominator
+            query_keywords = set(vec1.keys())
+            numerator = sum(vec1[x] * vec2.get(x, 0) for x in query_keywords)
+            
+            # 只计算查询词的权重平方和
+            sum1 = sum(vec1[x] ** 2 for x in query_keywords)
+            # 对于文档,只计算包含查询词的权重平方和
+            sum2 = sum(vec2.get(x, 0) ** 2 for x in query_keywords)
+            
+            denominator = math.sqrt(sum1) * math.sqrt(sum2) if sum1 and sum2 else 1e-6
+            
+            return float(numerator) / denominator
 
         similarities = []
         for document_tfidf in documents_tfidf:

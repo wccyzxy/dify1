@@ -97,6 +97,7 @@ const translation = {
     removeExtraSpaces: 'Replace consecutive spaces, newlines and tabs',
     removeUrlEmails: 'Delete all URLs and email addresses',
     removeStopwords: 'Remove stopwords such as "a", "an", "the"',
+    docxUseTreeIndex: 'To split docx document based on content tree',
     preview: 'Confirm & Preview',
     reset: 'Reset',
     indexMode: 'Index mode',

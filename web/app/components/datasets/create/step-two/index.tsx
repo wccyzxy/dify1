@@ -176,6 +176,9 @@ const StepTwo = ({
 
     if (key === 'remove_stopwords')
       return t('datasetCreation.stepTwo.removeStopwords')
+
+    if (key === 'docx_use_tree_index')
+      return t('datasetCreation.stepTwo.docxUseTreeIndex')
   }
   const ruleChangeHandle = (id: string) => {
     const newRules = rules.map((rule) => {
@@ -207,6 +210,13 @@ const StepTwo = ({
       setAutomaticFileIndexingEstimate(res)
   }
 
+  const confirmChangeAutoConfig = () => {
+    setAutomaticFileIndexingEstimate(null)
+    setShowPreview()
+    fetchFileIndexingEstimate()
+    setPreviewSwitched(false)
+  }
+
   const confirmChangeCustomConfig = () => {
     setCustomFileIndexingEstimate(null)
     setShowPreview()
@@ -229,6 +239,12 @@ const StepTwo = ({
           max_tokens: max,
           chunk_overlap: overlap,
         },
+      }
+      processRule.rules = ruleObj
+    }
+    if (segmentationType === SegmentType.AUTO) {
+      const ruleObj = {
+        pre_processing_rules: rules,
       }
       processRule.rules = ruleObj
     }
@@ -549,9 +565,8 @@ const StepTwo = ({
 
   useEffect(() => {
     if (segmentationType === SegmentType.AUTO) {
+      !isMobile && hidePreview()
       setAutomaticFileIndexingEstimate(null)
-      !isMobile && setShowPreview()
-      fetchFileIndexingEstimate()
       setPreviewSwitched(false)
     }
     else {
@@ -609,6 +624,25 @@ const StepTwo = ({
                 <div className={s.title}>{t('datasetCreation.stepTwo.auto')}</div>
                 <div className={s.tip}>{t('datasetCreation.stepTwo.autoDescription')}</div>
               </div>
+              {segmentationType === SegmentType.AUTO && (
+                <div className={s.typeFormBody}>
+                  <div className={s.formRow}>
+                    <div className='w-full flex flex-col gap-1'>
+                      <div className={s.label}>{t('datasetCreation.stepTwo.rules')}</div>
+                      {rules.map(rule => (
+                        <div key={rule.id} className={s.ruleItem}>
+                          <input id={rule.id} type="checkbox" checked={rule.enabled} onChange={() => ruleChangeHandle(rule.id)} className="w-4 h-4 rounded border-gray-300 text-blue-700 focus:ring-blue-700" />
+                          <label htmlFor={rule.id} className="ml-2 text-sm font-normal cursor-pointer text-gray-800">{getRuleName(rule.id)}</label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={s.formFooter}>
+                    <Button variant="primary" className={cn(s.button)} onClick={confirmChangeAutoConfig}>{t('datasetCreation.stepTwo.preview')}</Button>
+                    <Button className={cn(s.button, 'ml-2')} onClick={resetRules}>{t('datasetCreation.stepTwo.reset')}</Button>
+                  </div>
+                </div>
+              )}
             </div>
             <div
               className={cn(

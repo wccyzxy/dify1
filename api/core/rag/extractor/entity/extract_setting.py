@@ -50,6 +50,7 @@ class ExtractSetting(BaseModel):
     upload_file: Optional[UploadFile] = None
     notion_info: Optional[NotionInfo] = None
     website_info: Optional[WebsiteInfo] = None
+    docx_use_tree_index: bool = False
     document_model: Optional[str] = None
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

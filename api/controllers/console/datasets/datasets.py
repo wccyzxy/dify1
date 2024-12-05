@@ -347,10 +347,18 @@ class DatasetIndexingEstimateApi(Resource):
                 raise NotFound("File not found.")
 
             if file_details:
+                pre_processing_rules = args["process_rule"]["rules"].get("pre_processing_rules", [])
+                docx_use_tree_index = False
+                for r in pre_processing_rules:
+                    if r["id"] == "docx_use_tree_index" and r["enabled"] is True:
+                        docx_use_tree_index = True
+                        break
                 for file_detail in file_details:
                     extract_setting = ExtractSetting(
-                        datasource_type="upload_file", upload_file=file_detail, document_model=args["doc_form"]
+                        datasource_type="upload_file", upload_file=file_detail, document_model=args["doc_form"],
+                        docx_use_tree_index=docx_use_tree_index,
                     )
+                    print(extract_setting)
                     extract_settings.append(extract_setting)
         elif args["info_list"]["data_source_type"] == "notion_import":
             notion_info_list = args["info_list"]["notion_info_list"]

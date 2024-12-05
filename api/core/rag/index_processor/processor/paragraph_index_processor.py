@@ -25,16 +25,28 @@ class ParagraphIndexProcessor(BaseIndexProcessor):
 
     def transform(self, documents: list[Document], **kwargs) -> list[Document]:
         # Split the text documents into nodes.
+        process_rule = kwargs.get("process_rule")
         splitter = self._get_splitter(
-            processing_rule=kwargs.get("process_rule"), embedding_model_instance=kwargs.get("embedding_model_instance")
+            processing_rule=process_rule, embedding_model_instance=kwargs.get("embedding_model_instance")
         )
         all_documents = []
+        rules = process_rule["rules"] if process_rule else None
+        docx_use_tree_index = False
+        if "pre_processing_rules" in rules:
+            pre_processing_rules = rules["pre_processing_rules"]
+            for pre_processing_rule in pre_processing_rules:
+                if pre_processing_rule["id"] == "remove_urls_emails" and pre_processing_rule["enabled"] is True:
+                    docx_use_tree_index = True
         for document in documents:
             # document clean
-            document_text = CleanProcessor.clean(document.page_content, kwargs.get("process_rule"))
+            document_text = CleanProcessor.clean(document.page_content, process_rule)
             document.page_content = document_text
             # parse document to nodes
-            document_nodes = splitter.split_documents([document])
+            document_nodes = []
+            if document.metadata["source"].endswith(".docx") and docx_use_tree_index:
+                document_nodes = [document]
+            else:
+                document_nodes = splitter.split_documents([document])
             split_documents = []
             for document_node in document_nodes:
                 if document_node.page_content.strip():

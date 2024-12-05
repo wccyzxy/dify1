@@ -352,6 +352,7 @@ class DocumentService:
             "pre_processing_rules": [
                 {"id": "remove_extra_spaces", "enabled": True},
                 {"id": "remove_urls_emails", "enabled": False},
+                {"id": "docx_use_tree_index", "enabled": False}
             ],
             "segmentation": {"delimiter": "\n", "max_tokens": 500, "chunk_overlap": 50},
         },
@@ -703,7 +704,7 @@ class DocumentService:
                     dataset_process_rule = DatasetProcessRule(
                         dataset_id=dataset.id,
                         mode=process_rule["mode"],
-                        rules=json.dumps(DatasetProcessRule.AUTOMATIC_RULES),
+                        rules=json.dumps(process_rule["rules"]),
                         created_by=account.id,
                     )
                 db.session.add(dataset_process_rule)
@@ -946,7 +947,7 @@ class DocumentService:
                 dataset_process_rule = DatasetProcessRule(
                     dataset_id=dataset.id,
                     mode=process_rule["mode"],
-                    rules=json.dumps(DatasetProcessRule.AUTOMATIC_RULES),
+                    rules=json.dumps(process_rule["rules"]),
                     created_by=account.id,
                 )
             db.session.add(dataset_process_rule)
@@ -1161,7 +1162,7 @@ class DocumentService:
             raise ValueError("Process rule mode is invalid")
 
         if args["process_rule"]["mode"] == "automatic":
-            args["process_rule"]["rules"] = {}
+            args["process_rule"]["rules"] = args["process_rule"]["rules"]
         else:
             if "rules" not in args["process_rule"] or not args["process_rule"]["rules"]:
                 raise ValueError("Process rule rules is required")
@@ -1244,7 +1245,7 @@ class DocumentService:
             raise ValueError("Process rule mode is invalid")
 
         if args["process_rule"]["mode"] == "automatic":
-            args["process_rule"]["rules"] = {}
+            args["process_rule"]["rules"] = args["process_rule"]["rules"]
         else:
             if "rules" not in args["process_rule"] or not args["process_rule"]["rules"]:
                 raise ValueError("Process rule rules is required")

@@ -320,8 +320,15 @@ class IndexingRunner:
             )
 
             if file_detail:
+                pre_processing_rules = process_rule["rules"].get("pre_processing_rules")
+                docx_use_tree_index = False
+                for r in pre_processing_rules:
+                    if r["id"] == "docx_use_tree_index" and r["enabled"] is True:
+                        docx_use_tree_index = True
+                        break
                 extract_setting = ExtractSetting(
-                    datasource_type="upload_file", upload_file=file_detail, document_model=dataset_document.doc_form
+                    datasource_type="upload_file", upload_file=file_detail, document_model=dataset_document.doc_form,
+                    docx_use_tree_index=docx_use_tree_index
                 )
                 text_docs = index_processor.extract(extract_setting, process_rule_mode=process_rule["mode"])
         elif dataset_document.data_source_type == "notion_import":

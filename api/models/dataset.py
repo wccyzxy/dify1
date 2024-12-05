@@ -183,11 +183,12 @@ class DatasetProcessRule(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.text("CURRENT_TIMESTAMP(0)"))
 
     MODES = ["automatic", "custom"]
-    PRE_PROCESSING_RULES = ["remove_stopwords", "remove_extra_spaces", "remove_urls_emails"]
+    PRE_PROCESSING_RULES = ["remove_stopwords", "remove_extra_spaces", "remove_urls_emails", "docx_use_tree_index"]
     AUTOMATIC_RULES = {
         "pre_processing_rules": [
             {"id": "remove_extra_spaces", "enabled": True},
             {"id": "remove_urls_emails", "enabled": False},
+            {"id": "docx_use_tree_index", "enabled": False}
         ],
         "segmentation": {"delimiter": "\n", "max_tokens": 500, "chunk_overlap": 50},
     }

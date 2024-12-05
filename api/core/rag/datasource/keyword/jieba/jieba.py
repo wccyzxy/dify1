@@ -16,7 +16,7 @@ from core.rag.datasource.utils.common import parse_extraction_query
 
 
 class KeywordTableConfig(BaseModel):
-    max_keywords_per_chunk: int = 10
+    max_keywords_per_chunk: int = 30
 
 
 class Jieba(BaseKeyword):
