@@ -122,6 +122,9 @@ class Vector:
     def text_exists(self, id: str) -> bool:
         return self._vector_processor.text_exists(id)
 
+    def query_chunk_by_id(self, id: str) -> list[Document]:
+        return self._vector_processor.query_chunk_by_id(id)
+
     def delete_by_ids(self, ids: list[str]) -> None:
         self._vector_processor.delete_by_ids(ids)
 

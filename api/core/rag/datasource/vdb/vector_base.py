@@ -27,6 +27,10 @@ class BaseVector(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def query_chunk_by_id(self, id: str) -> list[Document]:
+        raise NotImplementedError
+
+    @abstractmethod
     def delete_by_ids(self, ids: list[str]) -> None:
         raise NotImplementedError
 

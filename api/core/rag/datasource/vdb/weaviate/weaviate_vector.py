@@ -164,6 +164,39 @@ class WeaviateVector(BaseVector):
 
         return True
 
+    def query_chunk_by_id(self, id: str) -> list[Document]:
+        collection_name = self._collection_name
+        schema = self._default_schema(self._collection_name)
+
+        # check whether the index already exists
+        if not self._client.schema.contains(schema):
+            return []
+        properties = self._attributes
+        properties.append(Field.TEXT_KEY.value)
+        query_obj = self._client.query.get(collection_name, properties)
+
+        result = (
+            query_obj.with_additional(["vector", "distance"])
+            .with_where(
+                {
+                    "path": ["doc_id"],
+                    "operator": "Equal",
+                    "valueText": id,
+                }
+            )
+            .with_limit(1)
+            .do()
+        )
+        if "errors" in result:
+            raise ValueError(f"Error during query: {result['errors']}")
+
+        entries = result["data"]["Get"][collection_name]
+        if len(entries) == 0:
+            return []
+        res = entries[0]
+        text = res.pop(Field.TEXT_KEY.value)
+        return [Document(page_content=text, vector=res["_additional"]["vector"], metadata=res)]
+
     def delete_by_ids(self, ids: list[str]) -> None:
         # check whether the index already exists
         schema = self._default_schema(self._collection_name)
@@ -225,7 +258,7 @@ class WeaviateVector(BaseVector):
             text = res.pop(Field.TEXT_KEY.value)
             score = 1 - res["_additional"]["distance"]
             print(res)
-            docs_and_scores.append((Document(page_content=text, metadata=res), score))
+            docs_and_scores.append((Document(page_content=text, vector=res["_additional"]["vector"], metadata=res), score))
 
         docs = []
         for doc, score in docs_and_scores:

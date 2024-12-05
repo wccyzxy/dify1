@@ -41,7 +41,7 @@ class RetrievalService:
         threads = []
         exceptions = []
         # retrieval_model source with keyword
-        if retrieval_method == "keyword_search":
+        if RetrievalMethod.is_support_keyword_search(retrieval_method):
             keyword_thread = threading.Thread(
                 target=RetrievalService.keyword_search,
                 kwargs={
@@ -51,6 +51,7 @@ class RetrievalService:
                     "top_k": top_k,
                     "all_documents": all_documents,
                     "exceptions": exceptions,
+                    "retrieval_method": retrieval_method
                 },
             )
             threads.append(keyword_thread)
@@ -111,7 +112,7 @@ class RetrievalService:
 
     @classmethod
     def keyword_search(
-        cls, flask_app: Flask, dataset_id: str, query: str, top_k: int, all_documents: list, exceptions: list
+        cls, flask_app: Flask, dataset_id: str, query: str, top_k: int, all_documents: list, exceptions: list, retrieval_method: str
     ):
         with flask_app.app_context():
             try:
@@ -120,6 +121,17 @@ class RetrievalService:
                 keyword = Keyword(dataset=dataset)
 
                 documents = keyword.search(cls.escape_query_for_search(query), top_k=top_k)
+
+                if retrieval_method == RetrievalMethod.HYBRID_SEARCH.value:
+                    vector = Vector(dataset=dataset)
+                    add_vector_documents = []
+                    for document in documents:
+                        doc_id = document.metadata["doc_id"]
+                        vector_documents = vector.query_chunk_by_id(doc_id)
+                        if len(vector_documents) == 1:
+                            document.vector = vector_documents[0].vector
+                            add_vector_documents.append(document)
+                    documents = add_vector_documents
                 all_documents.extend(documents)
             except Exception as e:
                 exceptions.append(str(e))
