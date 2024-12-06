@@ -16,6 +16,7 @@ from docx import Document as DocxDocument
 from configs import dify_config
 from core.rag.extractor.extractor_base import BaseExtractor
 from core.rag.extractor.util.docx_utils import DocxUtils
+from core.rag.extractor.util.auto_split_with_regex import DocumentStructureParser
 from core.rag.models.document import Document
 from extensions.ext_database import db
 from extensions.ext_storage import storage
@@ -38,6 +39,7 @@ class WordExtractor(BaseExtractor):
         self.tenant_id = tenant_id
         self.user_id = user_id
         self.use_tree_index = use_tree_index
+        self.law_and_guidance_parser = DocumentStructureParser()
 
         if "~" in self.file_path:
             self.file_path = os.path.expanduser(self.file_path)
@@ -66,11 +68,16 @@ class WordExtractor(BaseExtractor):
         if self.use_tree_index:
             doc_util = DocxUtils(chunk_size=1500)
             content_list = doc_util.extract_docx_to_list(self.file_path)
+            contents = ""
+            for content in content_list:
+                contents += content.get("content", '') + "\n"
             documents = []
+            if self.law_and_guidance_parser.is_chinese_law(contents):
+                content_list = self.law_and_guidance_parser.parse_file_to_list(contents, False)
             for content in content_list:
                 documents.append(
                     Document(
-                        page_content=content,
+                        page_content=content.get("content", ''),
                         metadata={"source": self.file_path},
                     )
                 )

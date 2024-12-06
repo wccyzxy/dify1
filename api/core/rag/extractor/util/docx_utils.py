@@ -71,20 +71,32 @@ class DocxUtils:
 
     def extract_paragraph_content(self, paragraph):
         content = []
-        for run in paragraph.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r'):
-            text = "".join(
-                [t.text for t in run.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t')])
-            if text:
-                content.append(text)
-        content = "".join(content)
+        # 遍历所有子元素,按顺序处理文本和公式
+        for element in paragraph:
+            if element.tag.endswith('}r'):  # 处理普通文本
+                is_subscript = False
+                is_superscript = False
+                e_rPr = element.rPr
+                if e_rPr is not None:
+                    is_subscript = e_rPr.subscript
+                    is_superscript = e_rPr.superscript
 
-        # 处理公式
-        oMath = paragraph.find('.//{http://schemas.openxmlformats.org/officeDocument/2006/math}oMath')
-        if oMath is not None:
-            markdown_equation = self.omml_to_markdown(oMath)
-            content = f"{markdown_equation} {content}"
+                # 提取文本，使用正确的命名空间
+                text = element.text
 
-        return content
+                if text:
+                    if is_subscript:
+                        content.append(f"$_{text}$")  # 使用 _{text} 格式表示下标
+                    elif is_superscript:
+                        content.append(f"$^{text}$")
+                    else:
+                        content.append(text)
+            elif element.tag.endswith('}oMath'):  # 处理公式
+                markdown_equation = self.omml_to_markdown(element)
+                content.append(markdown_equation)
+
+        # 将所有内容按顺序拼接
+        return "".join(content)
 
     def extract_table_data(self, table):
         """提取表格数据"""
@@ -448,10 +460,9 @@ class DocxUtils:
                         match = heading_pattern.match(para_text)
                         if match:
                             # 计算标题序号中的点的数量来确定标题的层级
-                            level = len(match.group(1).split('.'))
-                            # 如果层级大于3，则从第4级开始依次增加
-                            if level > 3:
-                                level += 6
+                            length = len(match.group(1).split('.'))
+                            if length > 3:
+                                level = length + 6
                     if level > 0:
                         # 创建一个新的section
                         new_section = {
@@ -503,49 +514,59 @@ class DocxUtils:
                 table_title = ''
         return final_template_json_data
 
-    def split_by_title(self, content, result):
+    def split_by_title(self, content, result, parent_titles=[]):
         if content['type'] == 'table':
-            title = self.clean_string(content['title']) + "\n"
-            text = []
+            title = self.clean_string(content['title'])
+            full_title = '\n'.join([t for t, level in parent_titles] + [title]) + "\n"
             for row in content['content']:
                 row_text = self.clean_string('|'.join(row)) + "\n"
-                if len(text) == 0:
-                    text.append(title + row_text)
+                if result[-1].get("content", "") in full_title and len(parent_titles) > 0:
+                    result[-1] = {"content": full_title, "metadata": {}}
+                elif full_title not in result[-1].get("content", "") and len(parent_titles) > 0:
+                    result.append({"content": full_title + row_text, "metadata": {}})
+                elif len(result[-1].get("content", "")) + len(row_text) > self.chunk_size:
+                    result.append({"content": full_title + row_text, "metadata": {}})
                 else:
-                    if len(text[-1]) + len(row_text) > self.chunk_size:
-                        text.append(title + row_text)
-                    else:
-                        text[-1] += row_text
-        else:
+                    result[-1] = {"content": result[-1].get("content", "") + row_text, "metadata": {}}
+        elif content['level'] > 0:
             text = self.clean_string(content.get('content', ''))
-
-        # 添加父级标题
-        full_title = text
-
-        if content['level'] > 0:
-            if result[-1] in full_title:
-                result[-1] = full_title
-            else:
-                result.append(full_title)
-        elif content['type'] == 'table':
-            if isinstance(full_title, str):
-                result.append(full_title)
-            elif isinstance(full_title, list):
-                for item in full_title:
-                    result.append(item)
-            else:
-                print("Invalid type of full_title:", type(full_title))
+            relevant_parents = [(title, level) for title, level in parent_titles if level < content['level']]
+            parent_titles = relevant_parents + [(text, content['level'])]
         else:
-            result[-1] = result[-1] + " " + text + '\n'
-        if 'children' in content.keys():
+            full_title = '\n'.join([t for t, level in parent_titles]) + '\n'
+            text = self.clean_string(content.get('content', '')) + "\n"
+            if len(parent_titles) > 0:
+                if result[-1].get("content", "") in full_title:
+                    result[-1] = {"content": full_title + text, "metadata": {}}
+                elif full_title not in result[-1].get("content", ""):
+                    result.append({"content": full_title + text, "metadata": {}})
+                else:
+                    if len(result[-1]) + len(text) > self.chunk_size:
+                        result.append({"content": full_title + text, "metadata": {}})
+                    else:
+                        result[-1] = {"content": result[-1].get("content", "") + text, "metadata": {}}
+            else:
+                if len(result[-1]) + len(text) > self.chunk_size:
+                    result.append({"content": text, "metadata": {}})
+                else:
+                    result[-1] = {"content": result[-1].get("content", "") + text, "metadata": {}}
+
+        if 'children' in content.keys() and len(content['children']) > 0:
             for child in content['children']:
-                result = self.split_by_title(child, result)
+                result = self.split_by_title(child, result, parent_titles)
+        else:
+            text = "\n".join([t for t, level in parent_titles]) + "\n"
+            if len(parent_titles) > 0:
+                if result[-1].get("content", "") in text:
+                    result[-1] = {"content": text, "metadata": {}}
+                elif text not in result[-1].get("content", ""):
+                    result.append({"content": text, "metadata": {}})
 
         return result
 
     def extract_docx_to_list(self, doc_path):
         doc_json = self.doc_to_json_with_level(doc_path)
-        result = self.split_by_title(doc_json, [''])
+        result = self.split_by_title(doc_json, [{"content": "", "metadata": {}}])
         return result
 
     ############################################################
