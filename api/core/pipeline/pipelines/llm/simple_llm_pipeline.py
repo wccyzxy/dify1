@@ -72,13 +72,13 @@ class SimpleLLMPipeline(BasePipeline):
         context_content = context.pipeline_datas[-1].fetch_context() if len(context.pipeline_datas) > 0 else ""
         
         # fetch model config
-        model_instance, model_config = self._fetch_model_config(self.config['model'])
+        model_instance, model_config = self.fetch_model_config(self.config['model'])
 
         conversations = self._get_conversations(conversation_id)
         # 处理prompt模板
-        prompt_messages = self._process_prompt_template(self.config['prompt_template'], query, context_content, conversations)
+        prompt_messages = self.process_prompt_template(self.config['prompt_template'], query, context_content, conversations)
         print(f"prompt_messages: {prompt_messages}")
-        llm_result = self._invoke_llm(model_instance, model_config, prompt_messages)
+        llm_result = self.invoke_llm(model_instance, model_config, prompt_messages)
 
         print(llm_result)
 
@@ -94,7 +94,7 @@ class SimpleLLMPipeline(BasePipeline):
         context.pipeline_datas.append(pipeline_data)
         return context
 
-    def _fetch_model_config(
+    def fetch_model_config(
         self, node_data_model: ModelConfig
     ) -> tuple[ModelInstance, ModelConfigWithCredentialsEntity]:
         """
@@ -160,6 +160,8 @@ class SimpleLLMPipeline(BasePipeline):
         )
 
     def _get_conversations(self, conversation_id):
+        if conversation_id == "" or conversation_id == "abc-123":
+            return []
         conversation = (
             db.session.query(Conversation)
             .filter(Conversation.id == conversation_id)
@@ -169,14 +171,14 @@ class SimpleLLMPipeline(BasePipeline):
         if not conversation:
             return []
         messages = []
-        for message in conversation.messages:
+        for message in reversed(conversation.messages):
             messages.append({
                 "query": message.query,
                 "answer": message.answer
             })
         return messages[-3:] if len(messages) > 3 else messages
 
-    def _invoke_llm(
+    def invoke_llm(
         self,
         model_instance: ModelInstance,
         model_config: ModelConfigWithCredentialsEntity,
@@ -199,7 +201,7 @@ class SimpleLLMPipeline(BasePipeline):
         else:
             return invoke_result
         
-    def _process_prompt_template(self, prompt_template, query, context_content, conversations = []) -> list[PromptMessage]:
+    def process_prompt_template(self, prompt_template, query, context_content, conversations = []) -> list[PromptMessage]:
         processed_messages = []
         for message in prompt_template:
             role = message.get('role', 'user')

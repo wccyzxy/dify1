@@ -42,26 +42,26 @@ class DealQueryQAPipeline(BasePipeline):
                     }]
                 }]
             }
-        elif len(middle_related_qas) > 0:
-            answers = [qa.get("question", "") for qa in middle_related_qas]
-            answer = "请问您是想问下面的问题吗：\n\n"
-            for index, item in enumerate(answers, start=1):
-                answer += f"    {index}. {item}\n"
-            answer += "\n\n请输入上面的问题，或者提供更多的信息进行提问"
-            result_data.data = {
-                "code": 200,
-                "message": "success",
-                "answer": answer,
-                "references": []
-            }
-        elif len(low_related_qas) > 0:
-            result_data.data = {
-                "code": 300,
-                "message": "success",
-                "answer": "",
-                "key": "query_fagui",
-                "recommend_questions": [qa.get("question", "") for qa in low_related_qas]
-            }
+        # elif len(middle_related_qas) > 0:
+        #     answers = [qa.get("question", "") for qa in middle_related_qas]
+        #     answer = "请问您是想问下面的问题吗：\n\n"
+        #     for index, item in enumerate(answers, start=1):
+        #         answer += f"    {index}. {item}\n"
+        #     answer += "\n\n请输入上面的问题，或者提供更多的信息进行提问"
+        #     result_data.data = {
+        #         "code": 200,
+        #         "message": "success",
+        #         "answer": answer,
+        #         "references": []
+        #     }
+        # elif len(low_related_qas) > 0:
+        #     result_data.data = {
+        #         "code": 300,
+        #         "message": "success",
+        #         "answer": "",
+        #         "key": "query_fagui",
+        #         "recommend_questions": [qa.get("question", "") for qa in low_related_qas]
+        #     }
         else:
             result_data.data = {
                 "code": 300,

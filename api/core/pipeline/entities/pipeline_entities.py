@@ -88,7 +88,7 @@ class BasePipelineData(ABC):
     def fetch_context(self) -> str:
         if self.data_from == 'RAG':
             if isinstance(self.data, list) and len(self.data) > 0:
-                contents = [item.get('content', '') for item in self.data if isinstance(item, dict)]
+                contents = [item.get('content', '').replace("\n\n", "\n") for item in self.data if isinstance(item, dict)]
                 return '\n\n'.join(contents)
         if self.data_from == 'LLM':
             if isinstance(self.data, dict) and self.data.get('message', None):
@@ -109,6 +109,9 @@ class BasePipelineData(ABC):
         if self.data_from == "FuncDeveloping":
             if self.data.get("code", 200) == 200:
                 return self.data.get("data", "")
+        if self.data_from == "QueryLawAndGuidance":
+            if self.data.get("code", 200) == 200:
+                return self.data.get("answer", "")
         return ''
 
 class PipelineExecutionContext:

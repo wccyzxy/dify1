@@ -56,6 +56,7 @@ class DealLeadingQuestionPipeline(BasePipeline):
                     "data": deal_data,
                     "key": "query"
                 }
+                context.query.query = deal_data.get("data", context.query.query)
             elif deal_type == "query_fagui":
                 relevant_data.data = {
                     "code": 300,
@@ -63,7 +64,7 @@ class DealLeadingQuestionPipeline(BasePipeline):
                     "data": deal_data,
                     "key": "query_fagui"
                 }
-
+                context.query.query = deal_data.get("data", context.query.query)
 
         relevant_data.data_from = "DealLeadingQuestion"
         return context

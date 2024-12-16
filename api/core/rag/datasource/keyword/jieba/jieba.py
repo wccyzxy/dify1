@@ -81,8 +81,9 @@ class Jieba(BaseKeyword):
 
         k = kwargs.get("top_k", 4)
 
-        query_info = parse_extraction_query(query)  
-        sorted_chunk_indices = self._retrieve_ids_by_query(keyword_table, query, k)
+        query_info = parse_extraction_query(query)
+
+        sorted_chunk_indices = self._retrieve_ids_by_query(keyword_table, query_info["query"] if query_info["query"] else query, k)
 
         documents = []
         

@@ -300,3 +300,47 @@ def determine_language(text):
         return 'english'
     else:
         return 'mixed'
+
+def try_parse_json_object(input: str) -> tuple[str, dict]:
+    """JSON cleaning and formatting utilities."""
+    # Sometimes, the LLM returns a json string with some extra description, this function will clean it up.
+
+    result = None
+    try:
+        # Try parse first
+        result = json.loads(input)
+    except json.JSONDecodeError:
+        pass
+
+    if result:
+        return input, result
+
+    _pattern = r"\{(.*)\}"
+    _match = re.search(_pattern, input, re.DOTALL)
+    input = "{" + _match.group(1) + "}" if _match else input
+
+    # Clean up json string.
+    input = (
+        input.replace("{{", "{")
+        .replace("}}", "}")
+        .replace('"[{', "[{")
+        .replace('}]"', "}]")
+        .replace("\\", " ")
+        .replace("\\n", " ")
+        .replace("\n", " ")
+        .replace("\r", "")
+        .strip()
+    )
+
+    # Remove JSON Markdown Frame
+    if input.startswith("```json"):
+        input = input[len("```json") :]
+    if input.endswith("```"):
+        input = input[: len(input) - len("```")]
+
+    try:
+        result = json.loads(input)
+    except json.JSONDecodeError:
+        return input, {}
+    else:
+        return input, result

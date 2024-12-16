@@ -15,7 +15,7 @@ class SimpleRAGPipeline(BasePipeline):
         self.pipeline_name = "SimpleRAGPipeline"
 
     def process(self, context: PipelineExecutionContext) -> PipelineExecutionContext:
-        relevant_docs = self._fetch_dataset_retriever(context.query.query, self.config)
+        relevant_docs = self.fetch_dataset_retriever(context.query.query, self.config)
         print(f"relevant_docs: {relevant_docs}")
         relevant_data = BasePipelineData()
         relevant_data.data = relevant_docs
@@ -23,7 +23,7 @@ class SimpleRAGPipeline(BasePipeline):
         context.pipeline_datas.append(relevant_data)
         return context
     
-    def _fetch_dataset_retriever(self, query: str, rag_config: Dict[str, Any]) -> list[dict[str, Any]]:
+    def fetch_dataset_retriever(self, query: str, rag_config: Dict[str, Any]) -> list[dict[str, Any]]:
         available_datasets = []
         dataset_ids = rag_config.get("dataset_ids", [])
 
