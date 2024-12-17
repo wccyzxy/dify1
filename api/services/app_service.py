@@ -149,7 +149,11 @@ class AppService:
         # 创建pipeline_query_config
         if app.mode == AppMode.PIPELINE_CHAT.value:
             pipeline_query_config_path = f"pipeline_query_configs/{app.id}.json"
-            os.makedirs(pipeline_query_config_path, exist_ok=True)
+            parent_dir = os.path.dirname(pipeline_query_config_path)
+
+            # 如果父目录不为空且不存在，则创建
+            if parent_dir and not os.path.exists(parent_dir):
+                os.makedirs(parent_dir)
             with open(pipeline_query_config_path, "w") as f:
                 json.dump({}, f)
 
