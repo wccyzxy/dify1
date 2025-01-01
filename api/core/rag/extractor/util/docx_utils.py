@@ -299,17 +299,17 @@ class DocxUtils:
                             continue
 
                     level = -1
-                    if style_name == 'heading 1' or style_name == 'Heading1':
+                    if style_name in ['heading 1', 'Heading1', '1.']:
                         level = 1
-                    elif style_name == 'heading 2' or style_name == 'Heading2':
+                    elif style_name in ['heading 2', 'Heading2', '1.1']:
                         level = 2
-                    elif style_name == 'heading 3' or style_name == 'Heading3':
+                    elif style_name in ['heading 3', 'Heading3', '1.1.1']:
                         level = 3
-                    elif style_name == 'heading 4' or style_name == 'Heading4':
+                    elif style_name in ['heading 4', 'Heading4', '1.1.1.1']:
                         level = 4
-                    elif style_name == 'heading 5' or style_name == 'Heading5':
+                    elif style_name in ['heading 5', 'Heading5']:
                         level = 5
-                    elif style_name == 'heading 6' or style_name == 'Heading6':
+                    elif style_name in ['heading 6', 'Heading6']:
                         level = 6
                     else:
                         match = heading_pattern.match(para_text)
@@ -444,17 +444,17 @@ class DocxUtils:
                             continue
 
                     level = -1
-                    if style_name == 'heading 1' or style_name == 'Heading1':
+                    if style_name in ['heading 1', 'Heading1', '1.']:
                         level = 1
-                    elif style_name == 'heading 2' or style_name == 'Heading2':
+                    elif style_name in ['heading 2', 'Heading2', '1.1']:
                         level = 2
-                    elif style_name == 'heading 3' or style_name == 'Heading3':
+                    elif style_name in ['heading 3', 'Heading3', '1.1.1']:
                         level = 3
-                    elif style_name == 'heading 4' or style_name == 'Heading4':
+                    elif style_name in ['heading 4', 'Heading4', '1.1.1.1']:
                         level = 4
-                    elif style_name == 'heading 5' or style_name == 'Heading5':
+                    elif style_name in ['heading 5', 'Heading5']:
                         level = 5
-                    elif style_name == 'heading 6' or style_name == 'Heading6':
+                    elif style_name in ['heading 6', 'Heading6']:
                         level = 6
                     else:
                         match = heading_pattern.match(para_text)
@@ -541,12 +541,12 @@ class DocxUtils:
                 elif full_title not in result[-1].get("content", ""):
                     result.append({"content": full_title + text, "metadata": {}})
                 else:
-                    if len(result[-1]) + len(text) > self.chunk_size:
+                    if len(result[-1].get("content", "")) + len(text) > self.chunk_size:
                         result.append({"content": full_title + text, "metadata": {}})
                     else:
                         result[-1] = {"content": result[-1].get("content", "") + text, "metadata": {}}
             else:
-                if len(result[-1]) + len(text) > self.chunk_size:
+                if len(result[-1].get("content", "")) + len(text) > self.chunk_size:
                     result.append({"content": text, "metadata": {}})
                 else:
                     result[-1] = {"content": result[-1].get("content", "") + text, "metadata": {}}
@@ -1350,10 +1350,11 @@ class DocxUtils:
                 match = re.match(r'heading\s*(\d+)', style)
                 if match:
                     title_level = int(match.group(1))
+                elif style.startswith('1.'):
+                    title_level = len(style.split('.'))
                 else:
                     title_level = -1
                 continue
-
             if found:
                 # 判断当前段落的级别
                 current_level = -1
@@ -1361,6 +1362,10 @@ class DocxUtils:
                 match = re.match(r'heading\s*(\d+)', style)
                 if match:
                     current_level = int(match.group(1))
+                elif style.startswith('1.'):
+                    current_level = len(style.split('.'))
+                else:
+                    current_level = -1
 
                 if current_level != -1 and current_level <= title_level:
                     # 遇到同级或更高级的标题，停止收集
