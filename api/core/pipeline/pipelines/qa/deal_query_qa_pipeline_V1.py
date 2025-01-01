@@ -28,19 +28,12 @@ class DealQueryQAPipeline(BasePipeline):
         if len(high_related_qas) > 0:
             highest_related_qa = high_related_qas[0]
             answer = highest_related_qa.get("answer", "")
+            highest_related_qa["metadata"]["fagui"] = self.deal_linyan_result(answer) if len(answer) > 0 else []
             result_data.data = {
                 "code": 200,
                 "message": "success",
                 "answer": answer,
-                "references": [{
-                    "type": "QA_DATASET",
-                    "data": [{
-                        "question": highest_related_qa.get("question", ""),
-                        "answer": highest_related_qa.get("answer", ""),
-                        "score": highest_related_qa.get("score", 0),
-                        "fagui": self.deal_linyan_result(answer) if len(answer) > 0 else []
-                    }]
-                }]
+                "references": [highest_related_qa]
             }
         # elif len(middle_related_qas) > 0:
         #     answers = [qa.get("question", "") for qa in middle_related_qas]
@@ -76,11 +69,15 @@ class DealQueryQAPipeline(BasePipeline):
     def deal_linyan_result(self, answer):
         linyan_service = LinyanService()
         fagui_regex = r'《(.*?)》'
-        fagui_title = re.findall(fagui_regex, answer, re.UNICODE | re.DOTALL)
-        if len(fagui_title) > 0:
-            result = linyan_service.query_fagui(fagui_title[0])
-            return result
-        return []
+        fagui_titles = re.findall(fagui_regex, answer, re.UNICODE | re.DOTALL)
+        result = []
+        for law in fagui_titles:
+            res = linyan_service.query_fagui(law)
+            if len(res) > 0:
+                data = res[0]
+                data["law"] = law
+                result.append(data)
+        return result
 
     def deal_qa_dataset(self, query, data):
         query_language = determine_language(query)
@@ -102,19 +99,19 @@ class DealQueryQAPipeline(BasePipeline):
                 high_related_qas.append({
                     "question": q,
                     "answer": a,
-                    "score": score
+                    "metadata": rag_reference.get('metadata', {})
                 })
             elif score >= 0.6:
                 middle_related_qas.append({
                     "question": q,
                     "answer": a,
-                    "score": score
+                    "metadata": rag_reference.get('metadata', {})
                 })
             else:
                 low_related_qas.append({
                     "question": q,
                     "answer": a,
-                    "score": score
+                    "metadata": rag_reference.get('metadata', {})
                 })
 
         return {

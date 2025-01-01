@@ -245,8 +245,9 @@ class PipelineChatAppGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycl
                 db.session.close()
             elif isinstance(event, QueuePipelineSucceededEvent):          
                 print(f'pipeline_succeeded: {event}') 
-                self._task_state.answer = event.outputs.get('answer', '')  
-                self._task_state.metadata['references'] = event.outputs.get('references', [])  
+                self._task_state.answer = event.outputs.get('answer', '')
+                references = event.outputs.get('references', [])
+                self._task_state.metadata["retriever_resources"] = references
                 yield self._message_to_stream_response(
                     answer=event.outputs.get('answer', ''), message_id=self._message.id
                 )
@@ -308,7 +309,6 @@ class PipelineChatAppGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycl
                 # published by moderation
                 yield self._message_replace_to_stream_response(answer=event.text)
             elif isinstance(event, QueuePipelineChatMessageEndEvent):
-                print(f'pipeline_chat_message_end: {event}')
                 output_moderation_answer = self._handle_output_moderation_when_task_finished(self._task_state.answer)
                 if output_moderation_answer:
                     self._task_state.answer = output_moderation_answer

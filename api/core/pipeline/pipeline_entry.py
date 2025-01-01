@@ -64,10 +64,25 @@ class PipelineExecutionEntry:
         answer = context.pipeline_datas[-1].fetch_context() if len(context.pipeline_datas) > 0 else ""
         references = []
         recommend_questions = []
+        updated_references = []
+
         for pipeline_data in context.pipeline_datas:
             if pipeline_data.data_from == "RAG":
-                references.append({"RAG": pipeline_data.data})
+                references = pipeline_data.data
             elif pipeline_data.data_from == "DealQueryQA":
-                references.append({"QA_DATASET": pipeline_data.data.get("references", [])})
+                references = pipeline_data.data.get("references", [])
                 recommend_questions = pipeline_data.data.get("recommend_questions", [])
-        return PipelineAnswer(answer=answer, references=references, recommend_questions=recommend_questions)
+            elif pipeline_data.data_from == "QueryLawAndGuidance":
+                references = pipeline_data.data.get("references", [])
+        for reference in references:
+            updated_references.append(
+                {
+                    "segment_id": reference.get("metadata", {}).get("segment_id", ""),
+                    "position": reference.get("metadata", {}).get("position", ""),
+                    "document_name": reference.get("metadata", {}).get("document_name", ""),
+                    "score": reference.get("metadata", {}).get("score", ""),
+                    "content": reference.get("content", ""),
+                    "metadata": reference.get("metadata", {}),
+                }
+            )
+        return PipelineAnswer(answer=answer, references=updated_references, recommend_questions=recommend_questions)

@@ -34,7 +34,7 @@ class LinyanService:
             "page": "1",
             "orders": [
                 {
-                    "column": "ColumneffectiveDate",
+                    "column": "EffectiveDate",
                     "desc": True
                 }
             ],
