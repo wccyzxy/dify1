@@ -43,7 +43,7 @@ class ParagraphIndexProcessor(BaseIndexProcessor):
             document.page_content = document_text
             # parse document to nodes
             document_nodes = []
-            if document.metadata["source"].endswith(".docx") and docx_use_tree_index:
+            if document.metadata["source"].endswith(".docx") and docx_use_tree_index and len(document.page_content) <= 1500:
                 document_nodes = [document]
             else:
                 document_nodes = splitter.split_documents([document])
