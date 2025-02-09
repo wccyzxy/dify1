@@ -22,6 +22,7 @@ export type UserProfileResponse = {
   name: string
   email: string
   avatar: string
+  avatar_url: string | null
   is_password_set: boolean
   interface_language?: string
   interface_theme?: string
@@ -62,7 +63,7 @@ export type TenantInfoResponse = {
   trial_end_reason: null | 'trial_exceeded' | 'using_custom'
 }
 
-export type Member = Pick<UserProfileResponse, 'id' | 'name' | 'email' | 'last_login_at' | 'last_active_at' | 'created_at'> & {
+export type Member = Pick<UserProfileResponse, 'id' | 'name' | 'email' | 'last_login_at' | 'last_active_at' | 'created_at' | 'avatar_url'> & {
   avatar: string
   status: 'pending' | 'active' | 'banned' | 'closed'
   role: 'owner' | 'admin' | 'editor' | 'normal' | 'dataset_operator'
@@ -216,7 +217,7 @@ export type FileUploadConfigResponse = {
   file_size_limit: number // default is 15MB
   audio_file_size_limit?: number // default is 50MB
   video_file_size_limit?: number // default is 100MB
-
+  workflow_file_upload_limit?: number // default is 10
 }
 
 export type InvitationResult = {

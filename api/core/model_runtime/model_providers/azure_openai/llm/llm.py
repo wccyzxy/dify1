@@ -108,7 +108,7 @@ class AzureOpenAILargeLanguageModel(_CommonAzureOpenAI, LargeLanguageModel):
         ai_model_entity = self._get_ai_model_entity(base_model_name=base_model_name, model=model)
 
         if not ai_model_entity:
-            raise CredentialsValidateFailedError(f'Base Model Name {credentials["base_model_name"]} is invalid')
+            raise CredentialsValidateFailedError(f"Base Model Name {credentials['base_model_name']} is invalid")
 
         try:
             client = AzureOpenAI(**self._to_credential_kwargs(credentials))
@@ -312,6 +312,9 @@ class AzureOpenAILargeLanguageModel(_CommonAzureOpenAI, LargeLanguageModel):
 
         block_as_stream = False
         if model.startswith("o1"):
+            if "max_tokens" in model_parameters:
+                model_parameters["max_completion_tokens"] = model_parameters["max_tokens"]
+                del model_parameters["max_tokens"]
             if stream:
                 block_as_stream = True
                 stream = False
@@ -598,6 +601,9 @@ class AzureOpenAILargeLanguageModel(_CommonAzureOpenAI, LargeLanguageModel):
             # message = cast(AssistantPromptMessage, message)
             message_dict = {"role": "assistant", "content": message.content}
             if message.tool_calls:
+                # fix azure when enable json schema cant process content = "" in assistant fix with None
+                if not message.content:
+                    message_dict["content"] = None
                 message_dict["tool_calls"] = [helper.dump_model(tool_call) for tool_call in message.tool_calls]
         elif isinstance(message, SystemPromptMessage):
             message = cast(SystemPromptMessage, message)
@@ -653,7 +659,7 @@ class AzureOpenAILargeLanguageModel(_CommonAzureOpenAI, LargeLanguageModel):
             tokens_per_message = 4
             # if there's a name, the role is omitted
             tokens_per_name = -1
-        elif model.startswith("gpt-35-turbo") or model.startswith("gpt-4") or model.startswith("o1"):
+        elif model.startswith("gpt-35-turbo") or model.startswith("gpt-4") or "o1" in model:
             tokens_per_message = 3
             tokens_per_name = 1
         else:

@@ -1,5 +1,5 @@
 import json
-from typing import Optional
+from typing import Any, Optional, cast
 
 import httpx
 
@@ -101,7 +101,7 @@ class FeishuRequest:
         """
         url = f"{self.API_BASE_URL}/access_token/get_tenant_access_token"
         payload = {"app_id": app_id, "app_secret": app_secret}
-        res = self._send_request(url, require_token=False, payload=payload)
+        res: dict = self._send_request(url, require_token=False, payload=payload)
         return res
 
     def create_document(self, title: str, content: str, folder_token: str) -> dict:
@@ -126,16 +126,19 @@ class FeishuRequest:
             "content": content,
             "folder_token": folder_token,
         }
-        res = self._send_request(url, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def write_document(self, document_id: str, content: str, position: str = "end") -> dict:
         url = f"{self.API_BASE_URL}/document/write_document"
         payload = {"document_id": document_id, "content": content, "position": position}
-        res = self._send_request(url, payload=payload)
+        res: dict = self._send_request(url, payload=payload)
         return res
 
-    def get_document_content(self, document_id: str, mode: str = "markdown", lang: str = "0") -> dict:
+    def get_document_content(self, document_id: str, mode: str = "markdown", lang: str = "0") -> str:
         """
         API url: https://open.larkoffice.com/document/server-docs/docs/docs/docx-v1/document/raw_content
         Example Response:
@@ -153,8 +156,10 @@ class FeishuRequest:
             "lang": lang,
         }
         url = f"{self.API_BASE_URL}/document/get_document_content"
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data").get("content")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            return cast(str, res.get("data", {}).get("content"))
+        return ""
 
     def list_document_blocks(
         self, document_id: str, page_token: str, user_id_type: str = "open_id", page_size: int = 500
@@ -169,8 +174,11 @@ class FeishuRequest:
             "page_token": page_token,
         }
         url = f"{self.API_BASE_URL}/document/list_document_blocks"
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def send_bot_message(self, receive_id_type: str, receive_id: str, msg_type: str, content: str) -> dict:
         """
@@ -185,8 +193,11 @@ class FeishuRequest:
             "msg_type": msg_type,
             "content": content.strip('"').replace(r"\"", '"').replace(r"\\", "\\"),
         }
-        res = self._send_request(url, params=params, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, params=params, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def send_webhook_message(self, webhook: str, msg_type: str, content: str) -> dict:
         url = f"{self.API_BASE_URL}/message/send_webhook_message"
@@ -195,7 +206,7 @@ class FeishuRequest:
             "msg_type": msg_type,
             "content": content.strip('"').replace(r"\"", '"').replace(r"\\", "\\"),
         }
-        res = self._send_request(url, require_token=False, payload=payload)
+        res: dict = self._send_request(url, require_token=False, payload=payload)
         return res
 
     def get_chat_messages(
@@ -219,8 +230,11 @@ class FeishuRequest:
             "page_token": page_token,
             "page_size": page_size,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def get_thread_messages(
         self, container_id: str, page_token: str, sort_type: str = "ByCreateTimeAsc", page_size: int = 20
@@ -235,8 +249,11 @@ class FeishuRequest:
             "page_token": page_token,
             "page_size": page_size,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def create_task(self, summary: str, start_time: str, end_time: str, completed_time: str, description: str) -> dict:
         # 创建任务
@@ -248,8 +265,11 @@ class FeishuRequest:
             "completed_at": completed_time,
             "description": description,
         }
-        res = self._send_request(url, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def update_task(
         self, task_guid: str, summary: str, start_time: str, end_time: str, completed_time: str, description: str
@@ -264,8 +284,11 @@ class FeishuRequest:
             "completed_time": completed_time,
             "description": description,
         }
-        res = self._send_request(url, method="PATCH", payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, method="PATCH", payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def delete_task(self, task_guid: str) -> dict:
         # 删除任务
@@ -273,7 +296,7 @@ class FeishuRequest:
         payload = {
             "task_guid": task_guid,
         }
-        res = self._send_request(url, method="DELETE", payload=payload)
+        res: dict = self._send_request(url, method="DELETE", payload=payload)
         return res
 
     def add_members(self, task_guid: str, member_phone_or_email: str, member_role: str) -> dict:
@@ -284,7 +307,7 @@ class FeishuRequest:
             "member_phone_or_email": member_phone_or_email,
             "member_role": member_role,
         }
-        res = self._send_request(url, payload=payload)
+        res: dict = self._send_request(url, payload=payload)
         return res
 
     def get_wiki_nodes(self, space_id: str, parent_node_token: str, page_token: str, page_size: int = 20) -> dict:
@@ -296,16 +319,22 @@ class FeishuRequest:
             "page_token": page_token,
             "page_size": page_size,
         }
-        res = self._send_request(url, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def get_primary_calendar(self, user_id_type: str = "open_id") -> dict:
         url = f"{self.API_BASE_URL}/calendar/get_primary_calendar"
         params = {
             "user_id_type": user_id_type,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def create_event(
         self,
@@ -327,8 +356,11 @@ class FeishuRequest:
             "auto_record": auto_record,
             "attendee_ability": attendee_ability,
         }
-        res = self._send_request(url, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def update_event(
         self,
@@ -341,7 +373,7 @@ class FeishuRequest:
         auto_record: bool,
     ) -> dict:
         url = f"{self.API_BASE_URL}/calendar/update_event/{event_id}"
-        payload = {}
+        payload: dict[str, Any] = {}
         if summary:
             payload["summary"] = summary
         if description:
@@ -354,7 +386,7 @@ class FeishuRequest:
             payload["need_notification"] = need_notification
         if auto_record:
             payload["auto_record"] = auto_record
-        res = self._send_request(url, method="PATCH", payload=payload)
+        res: dict = self._send_request(url, method="PATCH", payload=payload)
         return res
 
     def delete_event(self, event_id: str, need_notification: bool = True) -> dict:
@@ -362,7 +394,7 @@ class FeishuRequest:
         params = {
             "need_notification": need_notification,
         }
-        res = self._send_request(url, method="DELETE", params=params)
+        res: dict = self._send_request(url, method="DELETE", params=params)
         return res
 
     def list_events(self, start_time: str, end_time: str, page_token: str, page_size: int = 50) -> dict:
@@ -373,8 +405,11 @@ class FeishuRequest:
             "page_token": page_token,
             "page_size": page_size,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def search_events(
         self,
@@ -394,8 +429,11 @@ class FeishuRequest:
             "user_id_type": user_id_type,
             "page_size": page_size,
         }
-        res = self._send_request(url, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def add_event_attendees(self, event_id: str, attendee_phone_or_email: str, need_notification: bool = True) -> dict:
         # 参加日程参会人
@@ -405,8 +443,11 @@ class FeishuRequest:
             "attendee_phone_or_email": attendee_phone_or_email,
             "need_notification": need_notification,
         }
-        res = self._send_request(url, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def create_spreadsheet(
         self,
@@ -419,8 +460,11 @@ class FeishuRequest:
             "title": title,
             "folder_token": folder_token,
         }
-        res = self._send_request(url, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def get_spreadsheet(
         self,
@@ -433,8 +477,11 @@ class FeishuRequest:
             "spreadsheet_token": spreadsheet_token,
             "user_id_type": user_id_type,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def list_spreadsheet_sheets(
         self,
@@ -445,8 +492,11 @@ class FeishuRequest:
         params = {
             "spreadsheet_token": spreadsheet_token,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def add_rows(
         self,
@@ -465,8 +515,11 @@ class FeishuRequest:
             "length": length,
             "values": values,
         }
-        res = self._send_request(url, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def add_cols(
         self,
@@ -485,8 +538,11 @@ class FeishuRequest:
             "length": length,
             "values": values,
         }
-        res = self._send_request(url, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def read_rows(
         self,
@@ -507,8 +563,11 @@ class FeishuRequest:
             "num_rows": num_rows,
             "user_id_type": user_id_type,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def read_cols(
         self,
@@ -529,8 +588,11 @@ class FeishuRequest:
             "num_cols": num_cols,
             "user_id_type": user_id_type,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def read_table(
         self,
@@ -551,8 +613,11 @@ class FeishuRequest:
             "query": query,
             "user_id_type": user_id_type,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def create_base(
         self,
@@ -565,8 +630,11 @@ class FeishuRequest:
             "name": name,
             "folder_token": folder_token,
         }
-        res = self._send_request(url, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def add_records(
         self,
@@ -587,8 +655,11 @@ class FeishuRequest:
         payload = {
             "records": convert_add_records(records),
         }
-        res = self._send_request(url, params=params, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, params=params, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def update_records(
         self,
@@ -609,8 +680,11 @@ class FeishuRequest:
         payload = {
             "records": convert_update_records(records),
         }
-        res = self._send_request(url, params=params, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, params=params, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def delete_records(
         self,
@@ -636,8 +710,11 @@ class FeishuRequest:
         payload = {
             "records": record_id_list,
         }
-        res = self._send_request(url, params=params, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, params=params, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def search_record(
         self,
@@ -688,7 +765,7 @@ class FeishuRequest:
             except json.JSONDecodeError:
                 raise ValueError("The input string is not valid JSON")
 
-        payload = {}
+        payload: dict[str, Any] = {}
 
         if view_id:
             payload["view_id"] = view_id
@@ -700,8 +777,12 @@ class FeishuRequest:
             payload["filter"] = filter_dict
         if automatic_fields:
             payload["automatic_fields"] = automatic_fields
-        res = self._send_request(url, params=params, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, params=params, payload=payload)
+
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def get_base_info(
         self,
@@ -712,8 +793,11 @@ class FeishuRequest:
         params = {
             "app_token": app_token,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def create_table(
         self,
@@ -740,8 +824,11 @@ class FeishuRequest:
         }
         if default_view_name:
             payload["default_view_name"] = default_view_name
-        res = self._send_request(url, params=params, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, params=params, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def delete_tables(
         self,
@@ -774,8 +861,12 @@ class FeishuRequest:
             "table_ids": table_id_list,
             "table_names": table_name_list,
         }
-        res = self._send_request(url, params=params, payload=payload)
-        return res.get("data")
+
+        res: dict = self._send_request(url, params=params, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def list_tables(
         self,
@@ -790,8 +881,11 @@ class FeishuRequest:
             "page_token": page_token,
             "page_size": page_size,
         }
-        res = self._send_request(url, method="GET", params=params)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res
 
     def read_records(
         self,
@@ -818,5 +912,8 @@ class FeishuRequest:
             "record_ids": record_id_list,
             "user_id_type": user_id_type,
         }
-        res = self._send_request(url, method="GET", params=params, payload=payload)
-        return res.get("data")
+        res: dict = self._send_request(url, method="GET", params=params, payload=payload)
+        if "data" in res:
+            data: dict = res.get("data", {})
+            return data
+        return res

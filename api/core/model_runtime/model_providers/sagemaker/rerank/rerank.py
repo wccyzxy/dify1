@@ -3,7 +3,7 @@ import logging
 import operator
 from typing import Any, Optional
 
-import boto3
+import boto3  # type: ignore
 
 from core.model_runtime.entities.common_entities import I18nObject
 from core.model_runtime.entities.model_entities import AIModelEntity, FetchFrom, ModelType
@@ -113,7 +113,8 @@ class SageMakerRerankModel(RerankModel):
             return RerankResult(model=model, docs=rerank_documents)
 
         except Exception as e:
-            logger.exception(f"Exception {e}, line : {line}")
+            logger.exception(f"Failed to invoke rerank model, model: {model}")
+            raise InvokeError(f"Failed to invoke rerank model, model: {model}, error: {str(e)}")
 
     def validate_credentials(self, model: str, credentials: dict) -> None:
         """

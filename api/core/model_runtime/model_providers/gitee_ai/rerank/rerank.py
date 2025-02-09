@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 import httpx
 
@@ -51,7 +51,7 @@ class GiteeAIRerankModel(RerankModel):
         base_url = base_url.removesuffix("/")
 
         try:
-            body = {"model": model, "query": query, "documents": docs}
+            body: dict[str, Any] = {"model": model, "query": query, "documents": docs}
             if top_n is not None:
                 body["top_n"] = top_n
             response = httpx.post(
@@ -122,7 +122,7 @@ class GiteeAIRerankModel(RerankModel):
             label=I18nObject(en_US=model),
             model_type=ModelType.RERANK,
             fetch_from=FetchFrom.CUSTOMIZABLE_MODEL,
-            model_properties={ModelPropertyKey.CONTEXT_SIZE: int(credentials.get("context_size"))},
+            model_properties={ModelPropertyKey.CONTEXT_SIZE: int(credentials.get("context_size", 512))},
         )
 
         return entity
